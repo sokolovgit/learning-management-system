@@ -47,7 +47,7 @@ describe('UserController', () => {
 
   it('should create a new user and return that', async () => {
     const createUserDto: CreateUserDto = {
-      name: 'Test User',
+      username: 'Test User',
       email: 'test@example.com',
       password: 'UserPassword123',
     };
