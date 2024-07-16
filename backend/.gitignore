@@ -1,6 +1,9 @@
 # Dependency directories
 node_modules/
 
+# Compiled
+dist/
+
 # Environment configuration files
 .env
 .env.test
