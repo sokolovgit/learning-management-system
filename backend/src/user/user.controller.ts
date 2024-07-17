@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { PaginatedResponse } from '../common/responses/paginated.response';
 
 import { User } from './entities/user.entity';
 
@@ -9,7 +10,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  findAll(): Promise<User[]> {
+  findAll(): Promise<PaginatedResponse<User>> {
     return this.userService.findAll();
   }
 
