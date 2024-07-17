@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import config from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigAsync } from './config/database.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { TypeOrmConfigAsync } from './config/database.config';
       load: [config],
     }),
     TypeOrmModule.forRootAsync(TypeOrmConfigAsync),
+    AuthModule,
     UserModule,
   ],
   controllers: [],
