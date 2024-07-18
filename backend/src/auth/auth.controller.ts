@@ -1,11 +1,13 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '../common/guards/local-auth.guard';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+
+import { UserDto } from '../user/dtos/user.dto';
 import { CreateUserDto } from '../user/dtos/create-user.dto';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { User } from '../user/entities/user.entity';
+
+import { Auth } from '../common/decorators/auth.decorator';
+import { AuthService } from './auth.service';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,14 +22,13 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  async login(@Request() req: Request & { user: User }) {
+  async login(@Request() req: Request & { user: UserDto }) {
     return this.authService.login(req.user);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  @Auth()
   @Post('protected')
-  async protected(@Request() req: Request & { user: User }) {
+  async protected_student(@Request() req: Request & { user: UserDto }) {
     return req.user;
   }
 }
