@@ -19,7 +19,7 @@ describe('UserController', () => {
             findAll: jest.fn().mockResolvedValue([new User(), new User()]),
             findOne: jest
               .fn()
-              .mockImplementation((id: number) => Promise.resolve(new User())),
+              .mockImplementation(() => Promise.resolve(new User())),
             create: jest
               .fn()
               .mockImplementation((userDto: CreateUserDto) =>
