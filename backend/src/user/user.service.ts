@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PaginatedResponse } from '../common/responses/paginated.response';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -12,12 +13,15 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async createUserWithHashedPassword(
+    createUserDto: CreateUserDto,
+  ): Promise<User> {
+    createUserDto.password = bcrypt.hashSync(createUserDto.password, 10);
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
-  async findAll(
+  async findAllPaginated(
     page?: number,
     pageSize?: number,
   ): Promise<PaginatedResponse<User>> {
@@ -40,7 +44,7 @@ export class UserService {
     return paginatedResponse;
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOneOrThrow(id: number): Promise<User> {
     const user: User = await this.userRepository.findOneBy({
       id: id,
     });
@@ -52,7 +56,7 @@ export class UserService {
     return user;
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmailOrThrow(email: string): Promise<User> {
     const user: User = await this.userRepository.findOneBy({
       email: email,
     });

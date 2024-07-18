@@ -38,14 +38,14 @@ describe('UserService', () => {
   });
 
   it('should return an array of users', async () => {
-    await expect(service.findAll()).resolves.toHaveLength(2);
+    await expect(service.findAllPaginated()).resolves.toHaveLength(2);
     expect(mockUserRepository.find).toHaveBeenCalled();
   });
 
   it('should return a single user by id', async () => {
     const user = new User();
     user.id = 1;
-    await expect(service.findOne(1)).resolves.toEqual(user);
+    await expect(service.findOneOrThrow(1)).resolves.toEqual(user);
     expect(mockUserRepository.findOneOrFail).toHaveBeenCalledWith(1);
   });
 
@@ -55,7 +55,9 @@ describe('UserService', () => {
       email: 'test@example.com',
       password: 'UserPassword123',
     };
-    await expect(service.create(userDto)).resolves.toHaveProperty('id');
+    await expect(
+      service.createUserWithHashedPassword(userDto),
+    ).resolves.toHaveProperty('id');
     expect(mockUserRepository.save).toHaveBeenCalledWith(userDto);
   });
 

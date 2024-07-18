@@ -37,12 +37,12 @@ describe('UserController', () => {
 
   it('should return an array of users', async () => {
     await expect(controller.findAll()).resolves.toHaveLength(2);
-    expect(service.findAll).toHaveBeenCalled();
+    expect(service.findAllPaginated).toHaveBeenCalled();
   });
 
   it('should return a single user by id', async () => {
     await expect(controller.findOne(1)).resolves.toBeInstanceOf(User);
-    expect(service.findOne).toHaveBeenCalledWith(1);
+    expect(service.findOneOrThrow).toHaveBeenCalledWith(1);
   });
 
   it('should create a new user and return that', async () => {
@@ -55,7 +55,9 @@ describe('UserController', () => {
       id: 1,
       ...createUserDto,
     });
-    expect(service.create).toHaveBeenCalledWith(createUserDto);
+    expect(service.createUserWithHashedPassword).toHaveBeenCalledWith(
+      createUserDto,
+    );
   });
 
   it('should delete a user and return void', async () => {
@@ -65,7 +67,7 @@ describe('UserController', () => {
 
   it('should throw NotFoundException when trying to find a non-existing user', async () => {
     jest
-      .spyOn(service, 'findOne')
+      .spyOn(service, 'findOneOrThrow')
       .mockRejectedValueOnce(new NotFoundException());
     await expect(controller.findOne(999)).rejects.toThrow(NotFoundException);
   });
