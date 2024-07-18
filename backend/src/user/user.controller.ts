@@ -11,17 +11,17 @@ export class UserController {
 
   @Get()
   findAll(): Promise<PaginatedResponse<User>> {
-    return this.userService.findAll();
+    return this.userService.findAllPaginated();
   }
 
   @Get(':id')
   findOne(@Param('id') id: number): Promise<User> {
-    return this.userService.findOne(id);
+    return this.userService.findOneOrThrow(id);
   }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+    return this.userService.createUserWithHashedPassword(createUserDto);
   }
 
   @Delete(':id')
