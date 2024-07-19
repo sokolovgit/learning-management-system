@@ -8,6 +8,8 @@ import { LoginDto } from './dtos/login.dto';
 
 import { Auth } from '../common/decorators/auth.decorator';
 import { AuthService } from './auth.service';
+import { Action } from '../abilities/enums/abilities.enum';
+import { User } from '../user/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,8 +28,8 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @Auth()
-  @Post('protected')
+  @Auth({ action: Action.Read, subject: User })
+  @Post('protected_student')
   async protected_student(@Request() req: Request & { user: UserDto }) {
     return req.user;
   }
