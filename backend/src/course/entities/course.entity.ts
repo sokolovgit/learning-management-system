@@ -15,13 +15,13 @@ export class Course {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   title: string;
 
   @Column()
   description: string;
 
-  @ManyToOne(() => User, (user) => user.courses)
+  @ManyToOne(() => User, (user) => user.teachingCourses)
   teacher: User;
 
   @OneToMany(() => Lesson, (lesson) => lesson.course)

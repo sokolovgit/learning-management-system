@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { PaginatedResponse } from '../common/responses/paginated.response';
+import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class UserService {
   async findAllPaginated(
     page?: number,
     pageSize?: number,
-  ): Promise<PaginatedResponse<User>> {
+  ): Promise<PaginatedResponseDto<User>> {
     const actualPage = page || 1;
     const actualPageSize: number = pageSize || 10;
 
@@ -36,10 +36,8 @@ export class UserService {
     const total: number = await this.userRepository.count();
     const totalPages: number = Math.ceil(total / actualPageSize);
 
-    const paginatedResponse: PaginatedResponse<User> =
-      new PaginatedResponse<User>(users, total, actualPage, totalPages);
-
-    paginatedResponse.setNavigationPages();
+    const paginatedResponse: PaginatedResponseDto<User> =
+      new PaginatedResponseDto<User>(users, total, actualPage, totalPages);
 
     return paginatedResponse;
   }

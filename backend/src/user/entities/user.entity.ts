@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { UserRole } from '../enums/user-roles.enum';
+import { UserRole } from '../enums/user-role.enum';
 import { Course } from '../../course/entities/course.entity';
 import { Homework } from '../../homework/entities/homework.entity';
 import { Grade } from '../../grade/entities/grade.entity';
@@ -22,7 +22,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({
@@ -33,10 +33,10 @@ export class User {
   role: UserRole;
 
   @OneToMany(() => Course, (course) => course.teacher)
-  courses: Course[];
+  teachingCourses: Course[];
 
   @OneToMany(() => Homework, (homework) => homework.student)
-  homeworks: Homework[];
+  submittedHomeworks: Homework[];
 
   @OneToMany(() => Grade, (grade) => grade.teacher)
   grades: Grade[];

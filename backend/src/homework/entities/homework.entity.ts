@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { HomeworkStatus } from '../enums/homework-status.enum';
 import { Lesson } from '../../lesson/entities/lesson.entity';
 import { User } from '../../user/entities/user.entity';
 import { Grade } from '../../grade/entities/grade.entity';
@@ -19,14 +20,21 @@ export class Homework {
   @Column()
   content: string;
 
+  @Column({
+    type: 'enum',
+    enum: HomeworkStatus,
+    default: HomeworkStatus.PENDING,
+  })
+  status: string;
+
   @ManyToOne(() => Lesson, (lesson) => lesson.homeworks)
   lesson: Lesson;
 
-  @ManyToOne(() => User, (user) => user.homeworks)
+  @ManyToOne(() => User, (user) => user.submittedHomeworks)
   student: User;
 
   @OneToMany(() => Grade, (grade) => grade.homework)
-  grades: Grade[];
+  grades: Grade[]; // One homework can have multiple grades for grading history
 
   @CreateDateColumn()
   createdAt: Date;

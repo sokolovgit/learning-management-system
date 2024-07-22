@@ -11,7 +11,7 @@ import { Course } from '../course/entities/course.entity';
 import { Lesson } from '../lesson/entities/lesson.entity';
 import { Homework } from '../homework/entities/homework.entity';
 import { Grade } from '../grade/entities/grade.entity';
-import { UserRole } from '../user/enums/user-roles.enum';
+import { UserRole } from '../user/enums/user-role.enum';
 import { Action } from './enums/abilities.enum';
 
 export type Subjects =
@@ -33,7 +33,6 @@ export class AbilityFactory {
     >(PureAbility as AbilityClass<AppAbility>);
 
     if (user.role === UserRole.TEACHER) {
-      can(Action.Manage, 'all');
       can(Action.Create, Course);
       can(Action.Update, Course);
       can(Action.Delete, Course);

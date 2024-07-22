@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { UserRole } from '../enums/user-roles.enum';
+import { UserRole } from '../enums/user-role.enum';
 import { IsString, IsNotEmpty, IsEmail, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
