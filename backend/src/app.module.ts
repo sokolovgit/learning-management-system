@@ -5,6 +5,7 @@ import config from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AbilitiesModule } from './abilities/abilities.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AbilitiesModule } from './abilities/abilities.module';
     }),
     AuthModule,
     UserModule,
+    CourseModule,
     AbilitiesModule,
   ],
   controllers: [],
