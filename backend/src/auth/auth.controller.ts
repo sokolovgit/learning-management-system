@@ -8,8 +8,10 @@ import { LoginDto } from './dtos/login.dto';
 
 import { Auth } from '../common/decorators/auth.decorator';
 import { AuthService } from './auth.service';
-import { Action } from '../abilities/enums/abilities.enum';
+// import { Action } from '../abilities/enums/abilities.enum';
 import { User } from '../user/entities/user.entity';
+import { plainToClass } from 'class-transformer';
+import { GetUser } from '../user/decorators/user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -18,19 +20,20 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
+    const user: User = await this.authService.register(createUserDto);
+    return plainToClass(UserDto, user);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  async login(@Request() req: Request & { user: UserDto }) {
-    return this.authService.login(req.user);
+  async login(@GetUser() user: LoginDto) {
+    return this.authService.login(user);
   }
 
-  @Auth({ action: Action.Read, subject: User })
+  @Auth()
   @Post('protected_student')
-  async protected_student(@Request() req: Request & { user: UserDto }) {
-    return req.user;
+  async protected_student(@GetUser() user: UserDto) {
+    return user;
   }
 }

@@ -31,6 +31,6 @@ import { AbilitiesModule } from '../abilities/abilities.module';
     AbilitiesModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AbilitiesGuard, JwtStrategy, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, AbilitiesGuard],
 })
 export class AuthModule {}
