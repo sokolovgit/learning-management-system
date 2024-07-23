@@ -1,5 +1,5 @@
 // pagination.dto.ts
-export interface PaginationDto<T> {
+export interface PaginationInterface<T> {
   items: T[];
   totalItems: number;
   currentPage: number;
@@ -8,7 +8,7 @@ export interface PaginationDto<T> {
   previousPage?: number;
 }
 
-export class PaginatedResponseDto<T> implements PaginationDto<T> {
+export class PaginatedResponseDto<T> implements PaginationInterface<T> {
   items: T[];
   totalItems: number;
   currentPage: number;
