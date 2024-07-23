@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '../common/guards/local-auth.guard';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
@@ -10,8 +10,7 @@ import { Auth } from '../common/decorators/auth.decorator';
 import { AuthService } from './auth.service';
 // import { Action } from '../abilities/enums/abilities.enum';
 import { User } from '../user/entities/user.entity';
-import { plainToClass } from 'class-transformer';
-import { GetUser } from '../user/decorators/user.decorator';
+import { UserDecorator } from '../user/decorators/user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,19 +20,19 @@ export class AuthController {
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     const user: User = await this.authService.register(createUserDto);
-    return plainToClass(UserDto, user);
+    return new UserDto(user);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  async login(@GetUser() user: LoginDto) {
+  async login(@UserDecorator() user: LoginDto) {
     return this.authService.login(user);
   }
 
   @Auth()
   @Post('protected_student')
-  async protected_student(@GetUser() user: UserDto) {
+  async protected_student(@UserDecorator() user: User) {
     return user;
   }
 }

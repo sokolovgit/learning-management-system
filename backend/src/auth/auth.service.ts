@@ -3,12 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dtos/create-user.dto';
-import { UserDto } from '../user/dtos/user.dto';
 
 import * as bcrypt from 'bcryptjs';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dtos/login.dto';
-import { classToPlain, instanceToPlain } from 'class-transformer';
+import { UserRole } from '../user/enums/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -39,13 +38,12 @@ export class AuthService {
   async login(user: LoginDto) {
     const foundUser = await this.userService.findOneByEmailOrThrow(user.email);
 
-    console.log('foundUser', instanceToPlain(foundUser));
     const payload = {
-      user: instanceToPlain(foundUser),
+      email: foundUser.email,
+      role: foundUser.role as UserRole,
       sub: foundUser.id,
     };
-    console.log('payload', payload);
-    console.log('this.jwtService.sign(payload)', this.jwtService.sign(payload));
+
     return {
       access_token: this.jwtService.sign(payload),
     };
