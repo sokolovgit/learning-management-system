@@ -35,6 +35,9 @@ export class User {
   @OneToMany(() => Course, (course) => course.teacher)
   teachingCourses: Course[];
 
+  @OneToMany(() => Course, (course) => course.students)
+  enrolledCourses: Course[];
+
   @OneToMany(() => Homework, (homework) => homework.student)
   submittedHomeworks: Homework[];
 

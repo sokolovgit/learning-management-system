@@ -1,11 +1,16 @@
-import { Exclude } from 'class-transformer';
 import { UserRole } from '../enums/user-role.enum';
 import { IsString, IsNotEmpty, IsEmail, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../entities/user.entity';
 
 export class UserDto {
   @IsNotEmpty()
   @IsNumber()
+  @ApiProperty({
+    description: 'The ID of the user',
+    type: 'number',
+    example: 1,
+  })
   id: number;
 
   @IsNotEmpty()
@@ -21,12 +26,14 @@ export class UserDto {
   @IsNotEmpty()
   @IsEmail()
   @ApiProperty({
-    name: 'password',
-    description: 'The password of the user',
+    name: 'email',
+    description: 'The email of the user',
     type: 'string',
-    example: 'johns_password',
+    example: 'john.doe@example.com',
   })
   email: string;
+
+  password: string;
 
   @IsNotEmpty()
   @ApiProperty({
@@ -37,10 +44,24 @@ export class UserDto {
   })
   role: UserRole;
 
-  @Exclude()
-  password: string;
+  @ApiProperty({
+    description: 'The creation date of the user',
+    type: 'string',
+    example: '2021-07-09T11:38:10.000Z',
+  })
+  createdAt: Date;
 
-  constructor(partial: Partial<UserDto>) {
-    Object.assign(this, partial);
+  @ApiProperty({
+    description: 'The update date of the user',
+    type: 'string',
+    example: '2021-07-09T11:38:10.000Z',
+  })
+  updatedAt: Date;
+
+  constructor(user: User) {
+    this.id = user.id;
+    this.username = user.username;
+    this.email = user.email;
+    this.role = user.role;
   }
 }
