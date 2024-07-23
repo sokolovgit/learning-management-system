@@ -42,7 +42,7 @@ export class UserService {
     return paginatedResponse;
   }
 
-  async findOneOrThrow(id: number): Promise<User> {
+  async findOneByIdOrThrow(id: number): Promise<User> {
     const user: User = await this.userRepository.findOneBy({
       id: id,
     });

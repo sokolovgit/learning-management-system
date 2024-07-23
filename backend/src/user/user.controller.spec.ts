@@ -42,7 +42,7 @@ describe('UserController', () => {
 
   it('should return a single user by id', async () => {
     await expect(controller.findOne(1)).resolves.toBeInstanceOf(User);
-    expect(service.findOneOrThrow).toHaveBeenCalledWith(1);
+    expect(service.findOneByIdOrThrow).toHaveBeenCalledWith(1);
   });
 
   it('should create a new user and return that', async () => {
@@ -67,7 +67,7 @@ describe('UserController', () => {
 
   it('should throw NotFoundException when trying to find a non-existing user', async () => {
     jest
-      .spyOn(service, 'findOneOrThrow')
+      .spyOn(service, 'findOneByIdOrThrow')
       .mockRejectedValueOnce(new NotFoundException());
     await expect(controller.findOne(999)).rejects.toThrow(NotFoundException);
   });

@@ -15,7 +15,7 @@ export class UserController {
 
   @Get(':id')
   findOne(@Param('id') id: number): Promise<User> {
-    return this.userService.findOneOrThrow(id);
+    return this.userService.findOneByIdOrThrow(id);
   }
 
   @Post()
