@@ -15,7 +15,7 @@ export class Course {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   title: string;
 
   @Column()
@@ -23,6 +23,9 @@ export class Course {
 
   @ManyToOne(() => User, (user) => user.teachingCourses)
   teacher: User;
+
+  @OneToMany(() => User, (user) => user.enrolledCourses)
+  students: User[];
 
   @OneToMany(() => Lesson, (lesson) => lesson.course)
   lessons: Lesson[];

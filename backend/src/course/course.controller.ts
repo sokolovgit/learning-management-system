@@ -1,11 +1,15 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
 import { Auth } from '../common/decorators/auth.decorator';
-import { CreateCourseDto } from './dtos/create-course.dto';
-import { UserDto } from '../user/dtos/user.dto';
-import { GetUser } from '../user/decorators/user.decorator';
-import { CourseService } from './course.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+
+import { CourseService } from './course.service';
+import { CreateCourseDto } from './dtos/create-course.dto';
+
 import { User } from '../user/entities/user.entity';
+import { UserDecorator } from '../user/decorators/user.decorator';
+import { CourseDto } from './dtos/course.dto';
+import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
+import { PaginationQueryOptionsDto } from '../common/dtos/pagination-query-options.dto';
 
 @Controller('course')
 @ApiTags('course')
@@ -17,16 +21,39 @@ export class CourseController {
   @ApiBody({ type: CreateCourseDto })
   async createCourse(
     @Body() createCourseDto: CreateCourseDto,
-    @GetUser() user: User,
+    @UserDecorator() user: User,
   ) {
-    console.log('createCourseDto', createCourseDto);
-    console.log('user', user);
-    console.log('pass', user.password);
+    const course = await this.courseService.createCourseWithUserAsTeacher(
+      createCourseDto,
+      user,
+    );
+    return new CourseDto(course);
   }
 
-  @Auth()
   @Get()
-  async getAllCourses(@GetUser() user: UserDto) {
-    return this.courseService.findAll(user);
+  async getAllCourses() {
+    const courses = await this.courseService.findAllCoursesOrThrow();
+    return courses.map((course) => new CourseDto(course));
+  }
+
+  @Get('paginated')
+  @ApiBody({ type: PaginationQueryOptionsDto })
+  async getAllCoursesPaginated(
+    @Query() paginationOptions: PaginationQueryOptionsDto,
+  ) {
+    const { courses, total, page, totalPages } =
+      await this.courseService.findAllCoursesPaginated(
+        paginationOptions.page,
+        paginationOptions.pageSize,
+      );
+
+    const courseDtos = courses.map((course) => new CourseDto(course));
+
+    return new PaginatedResponseDto<CourseDto>(
+      courseDtos,
+      total,
+      page,
+      totalPages,
+    );
   }
 }

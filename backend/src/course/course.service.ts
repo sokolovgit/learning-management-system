@@ -1,14 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dtos/create-course.dto';
-import { UserDto } from '../user/dtos/user.dto';
+import { User } from '../user/entities/user.entity';
+import { Course } from './entities/course.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CourseService {
-  async createCourse(createCourseDto: CreateCourseDto, user: UserDto) {
-    return;
+  constructor(
+    @InjectRepository(Course)
+    private courseRepository: Repository<Course>,
+  ) {}
+  async createCourseWithUserAsTeacher(
+    createCourseDto: CreateCourseDto,
+    user: User,
+  ) {
+    const course = this.courseRepository.create({
+      ...createCourseDto,
+      teacher: user,
+    });
+
+    return this.courseRepository.save(course);
   }
 
-  async findAll(user: UserDto) {
-    return;
+  async findAllCoursesOrThrow() {
+    const courses = await this.courseRepository.find({
+      relations: ['teacher'],
+    });
+
+    if (!courses) {
+      throw new NotFoundException('No courses found');
+    }
+
+    return courses;
+  }
+
+  async findAllCoursesPaginated(page: number, pageSize: number) {
+    const courses = await this.courseRepository.find({
+      relations: ['teacher'],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    const total = await this.courseRepository.count();
+    const totalPages = Math.ceil(total / pageSize);
+
+    return {
+      courses,
+      total,
+      page,
+      totalPages,
+    };
   }
 }
