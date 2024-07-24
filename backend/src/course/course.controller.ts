@@ -1,6 +1,6 @@
 import { Auth } from '../common/decorators/auth.decorator';
 import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dtos/create-course.dto';
@@ -36,12 +36,6 @@ export class CourseController {
     return courses.map((course) => new CourseDto(course));
   }
 
-  @Get(':id')
-  async getCourseById(id: number) {
-    const course = await this.courseService.findCourseByIdOrThrow(id);
-    return new CourseDto(course);
-  }
-
   @Get('paginated')
   @ApiQuery({
     name: 'page',
@@ -65,12 +59,17 @@ export class CourseController {
       );
 
     const courseDtos = courses.map((course) => new CourseDto(course));
-
     return new PaginatedResponseDto<CourseDto>(
       courseDtos,
       total,
       page,
       totalPages,
     );
+  }
+
+  @Get(':id')
+  async getCourseById(@Param('id') id: number) {
+    const course = await this.courseService.findCourseByIdOrThrow(id);
+    return new CourseDto(course);
   }
 }
