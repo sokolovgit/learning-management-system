@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../user/user.service';
@@ -8,12 +8,15 @@ import * as bcrypt from 'bcryptjs';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dtos/login.dto';
 import { UserRole } from '../user/enums/user-role.enum';
+import { MailerService } from '../mailer/mailer.service';
+import { UpdateUserDto } from '../user/dtos/update-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private mailerService: MailerService,
   ) {}
 
   async validateUserWithHashedPassword(
@@ -53,6 +56,36 @@ export class AuthService {
     const user =
       await this.userService.createUserWithHashedPassword(createUserDto);
 
+    const payload = {
+      email: user.email,
+      sub: user.id,
+    };
+    const token = this.jwtService.sign(payload);
+
+    const url = `http://localhost:3000/auth/verify-email?token=${token}`;
+
+    await this.mailerService.sendMail(user.email, 'Verify your email', url);
+
     return user;
+  }
+
+  async verifyEmail(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.userService.findOneByIdOrThrow(decoded.sub);
+
+      if (user.isEmailVerified) {
+        throw new BadRequestException('Email already verified');
+      }
+
+      const updateUserDto = new UpdateUserDto();
+      updateUserDto.isEmailVerified = true;
+
+      await this.userService.update(user.id, updateUserDto);
+
+      return { message: 'Email verified successfully' };
+    } catch (error) {
+      return { message: 'Invalid or expired token' };
+    }
   }
 }

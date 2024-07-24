@@ -33,6 +33,14 @@ export class UserDto {
   })
   email: string;
 
+  @ApiProperty({
+    description: 'The email verification status of the user',
+    type: 'boolean',
+    example: false,
+  })
+  @IsNotEmpty()
+  isEmailVerified: boolean;
+
   password: string;
 
   @IsNotEmpty()
@@ -62,6 +70,9 @@ export class UserDto {
     this.id = user.id;
     this.username = user.username;
     this.email = user.email;
+    this.isEmailVerified = user.isEmailVerified;
     this.role = user.role;
+    this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
   }
 }
