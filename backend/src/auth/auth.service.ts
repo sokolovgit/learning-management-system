@@ -3,11 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dtos/create-user.dto';
-import { UserDto } from '../user/dtos/user.dto';
-
-import { plainToClass } from 'class-transformer';
 
 import * as bcrypt from 'bcryptjs';
+import { User } from '../user/entities/user.entity';
+import { LoginDto } from './dtos/login.dto';
+import { UserRole } from '../user/enums/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
   async validateUserWithHashedPassword(
     email: string,
     pass: string,
-  ): Promise<UserDto> {
+  ): Promise<User> {
     const user = await this.userService.findOneByEmailOrThrow(email);
 
     if (!user) {
@@ -32,20 +32,27 @@ export class AuthService {
       return null;
     }
 
-    return plainToClass(UserDto, user);
+    return user;
   }
 
-  async login(user: UserDto) {
-    const payload = { email: user.email, sub: user.id };
+  async login(user: LoginDto) {
+    const foundUser = await this.userService.findOneByEmailOrThrow(user.email);
+
+    const payload = {
+      email: foundUser.email,
+      role: foundUser.role as UserRole,
+      sub: foundUser.id,
+    };
+
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  async register(createUserDto: CreateUserDto): Promise<UserDto> {
+  async register(createUserDto: CreateUserDto): Promise<User> {
     const user =
       await this.userService.createUserWithHashedPassword(createUserDto);
 
-    return plainToClass(UserDto, user);
+    return user;
   }
 }

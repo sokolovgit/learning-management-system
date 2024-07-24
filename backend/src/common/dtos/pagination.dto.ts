@@ -1,6 +1,14 @@
-import { Pagination } from '../interfaces/pagination.interface';
+// pagination.dto.ts
+export interface PaginationInterface<T> {
+  items: T[];
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+  nextPage?: number;
+  previousPage?: number;
+}
 
-export class PaginatedResponse<T> implements Pagination<T> {
+export class PaginatedResponseDto<T> implements PaginationInterface<T> {
   items: T[];
   totalItems: number;
   currentPage: number;
@@ -13,18 +21,15 @@ export class PaginatedResponse<T> implements Pagination<T> {
     totalItems: number,
     currentPage: number,
     totalPages: number,
-    nextPage?: number,
-    previousPage?: number,
   ) {
     this.items = items;
     this.totalItems = totalItems;
     this.currentPage = currentPage;
     this.totalPages = totalPages;
-    this.nextPage = nextPage;
-    this.previousPage = previousPage;
+    this.defineNavigationPages();
   }
 
-  setNavigationPages() {
+  private defineNavigationPages() {
     if (this.currentPage < this.totalPages) {
       this.nextPage = this.currentPage + 1;
     }

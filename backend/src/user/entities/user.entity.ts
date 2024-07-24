@@ -4,8 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
-import { UserRole } from '../enums/user-roles.enum';
+import { UserRole } from '../enums/user-role.enum';
+import { Course } from '../../course/entities/course.entity';
+import { Homework } from '../../homework/entities/homework.entity';
+import { Grade } from '../../grade/entities/grade.entity';
 
 @Entity()
 export class User {
@@ -18,7 +22,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({
@@ -27,6 +31,21 @@ export class User {
     default: UserRole.STUDENT,
   })
   role: UserRole;
+
+  @OneToMany(() => Course, (course) => course.teacher)
+  teachingCourses: Course[];
+
+  @OneToMany(() => Course, (course) => course.students)
+  enrolledCourses: Course[];
+
+  @OneToMany(() => Homework, (homework) => homework.student)
+  submittedHomeworks: Homework[];
+
+  @OneToMany(() => Grade, (grade) => grade.teacher)
+  grades: Grade[];
+
+  @OneToMany(() => Grade, (grade) => grade.student)
+  receivedGrades: Grade[];
 
   @CreateDateColumn()
   createdAt: Date;

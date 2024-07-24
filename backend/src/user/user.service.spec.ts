@@ -45,7 +45,7 @@ describe('UserService', () => {
   it('should return a single user by id', async () => {
     const user = new User();
     user.id = 1;
-    await expect(service.findOneOrThrow(1)).resolves.toEqual(user);
+    await expect(service.findOneByIdOrThrow(1)).resolves.toEqual(user);
     expect(mockUserRepository.findOneOrFail).toHaveBeenCalledWith(1);
   });
 

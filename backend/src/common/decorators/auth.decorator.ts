@@ -2,7 +2,12 @@ import { applyDecorators, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+//import { CheckAbilities, RequiredRule } from './check-ability.decorator';
 
-export function Auth() {
-  return applyDecorators(UseGuards(JwtAuthGuard), ApiBearerAuth());
+export function Auth(/*...abilities: RequiredRule[]*/) {
+  return applyDecorators(
+    UseGuards(JwtAuthGuard),
+    // CheckAbilities(...abilities),
+    ApiBearerAuth(),
+  );
 }
