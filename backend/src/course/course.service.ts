@@ -16,7 +16,8 @@ export class CourseService {
     user: User,
   ) {
     const course = this.courseRepository.create({
-      ...createCourseDto,
+      title: createCourseDto.title,
+      description: createCourseDto.description,
       teacher: user,
     });
 
@@ -51,5 +52,18 @@ export class CourseService {
       page,
       totalPages,
     };
+  }
+
+  async findCourseByIdOrThrow(id: number) {
+    const course = await this.courseRepository.findOne({
+      where: { id },
+      relations: ['teacher'],
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    return course;
   }
 }

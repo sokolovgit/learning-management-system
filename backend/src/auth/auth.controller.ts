@@ -10,7 +10,7 @@ import { Auth } from '../common/decorators/auth.decorator';
 import { AuthService } from './auth.service';
 // import { Action } from '../abilities/enums/abilities.enum';
 import { User } from '../user/entities/user.entity';
-import { UserDecorator } from '../user/decorators/user.decorator';
+import { CurrentUser } from '../user/decorators/user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,13 +26,13 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  async login(@UserDecorator() user: LoginDto) {
+  async login(@CurrentUser() user: LoginDto) {
     return this.authService.login(user);
   }
 
   @Auth()
   @Post('protected_student')
-  async protected_student(@UserDecorator() user: User) {
+  async protected_student(@CurrentUser() user: User) {
     return user;
   }
 }

@@ -25,7 +25,7 @@ export class Homework {
     enum: HomeworkStatus,
     default: HomeworkStatus.PENDING,
   })
-  homeworkStatus: HomeworkStatus;
+  status: HomeworkStatus;
 
   @ManyToOne(() => Lesson, (lesson) => lesson.homeworks)
   lesson: Lesson;
