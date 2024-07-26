@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
 import * as bcrypt from 'bcryptjs';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -64,6 +65,16 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const result = await this.userRepository.update(id, updateUserDto);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return this.findOneByIdOrThrow(id);
   }
 
   async remove(id: number): Promise<void> {

@@ -12,6 +12,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { LocalStrategy } from './local.strategy';
 import { AbilitiesGuard } from '../common/guards/abilities.guard';
 import { AbilitiesModule } from '../abilities/abilities.module';
+import { MailerService } from '../mailer/mailer.service';
 
 @Module({
   imports: [
@@ -31,6 +32,12 @@ import { AbilitiesModule } from '../abilities/abilities.module';
     AbilitiesModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, AbilitiesGuard],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    MailerService,
+    AbilitiesGuard,
+  ],
 })
 export class AuthModule {}

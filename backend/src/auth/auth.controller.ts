@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '../common/guards/local-auth.guard';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
@@ -28,6 +28,11 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   async login(@CurrentUser() user: LoginDto) {
     return this.authService.login(user);
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @Auth()
