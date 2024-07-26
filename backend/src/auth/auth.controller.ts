@@ -27,7 +27,7 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: LoginDto })
   async login(@CurrentUser() user: LoginDto) {
-    return this.authService.login(user);
+    return this.authService.loginOrThrow(user);
   }
 
   @Get('verify-email')
