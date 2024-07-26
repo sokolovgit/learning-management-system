@@ -39,21 +39,17 @@ export class AbilityFactory {
       can(Action.Read, Course);
       can(Action.Read, Lesson);
       can(Action.Read, Homework);
-      can(Action.Update, Homework, {
-        lesson: { course: { teacher: { id: user.id } } },
-      });
+      can(Action.Update, Homework);
       can(Action.Create, Grade);
-      can(Action.Update, Grade, {
-        homework: { lesson: { course: { teacher: { id: user.id } } } },
-      });
+      can(Action.Update, Grade);
       can(Action.Read, Grade);
     } else {
       can(Action.Read, Course);
       can(Action.Read, Lesson);
       can(Action.Create, Homework);
-      can(Action.Update, Homework, { student: { id: user.id } });
-      can(Action.Read, Homework, { student: { id: user.id } });
-      can(Action.Read, Grade, { student: { id: user.id } });
+      can(Action.Update, Homework);
+      can(Action.Read, Homework);
+      can(Action.Read, Grade);
 
       cannot(Action.Create, Course);
       cannot(Action.Update, Course);
@@ -62,9 +58,11 @@ export class AbilityFactory {
       cannot(Action.Update, Grade);
     }
 
-    return build({
+    const ability = build({
       detectSubjectType: (item) =>
         item.constructor as ExtractSubjectType<Subjects>,
     });
+
+    return ability;
   }
 }

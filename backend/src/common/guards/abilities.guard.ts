@@ -5,7 +5,6 @@ import {
   CHECK_ABILITY,
   RequiredRule,
 } from '../decorators/check-ability.decorator';
-import { ForbiddenError } from '@casl/ability';
 import { Request } from 'express';
 import { User } from '../../user/entities/user.entity';
 
