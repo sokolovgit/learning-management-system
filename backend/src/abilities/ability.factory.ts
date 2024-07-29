@@ -13,6 +13,7 @@ import { Homework } from '../homework/entities/homework.entity';
 import { Grade } from '../grade/entities/grade.entity';
 import { UserRole } from '../user/enums/user-role.enum';
 import { Action } from './enums/abilities.enum';
+import { EnrollmentCode } from '../course/entities/enrollment-code.entity';
 
 export type Subjects =
   | InferSubjects<
@@ -21,6 +22,7 @@ export type Subjects =
       | typeof Lesson
       | typeof Homework
       | typeof Grade
+      | typeof EnrollmentCode
     >
   | 'all';
 export type AppAbility = PureAbility<[Action, Subjects]>;
@@ -37,6 +39,8 @@ export class AbilityFactory {
       can(Action.Update, Course);
       can(Action.Delete, Course);
       can(Action.Read, Course);
+
+      can(Action.Create, EnrollmentCode);
 
       can(Action.Read, Lesson);
 

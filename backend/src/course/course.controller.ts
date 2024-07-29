@@ -18,6 +18,8 @@ import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
 import { PaginationQueryOptionsDto } from '../common/dtos/pagination-query-options.dto';
 import { Action } from '../abilities/enums/abilities.enum';
 import { Course } from './entities/course.entity';
+import { EnrollmentCode } from './entities/enrollment-code.entity';
+import { CreateEnrollmentCodeDto } from './dtos/create-enrollment-code.dto';
 
 @Controller('courses')
 @ApiTags('courses')
@@ -95,6 +97,48 @@ export class CourseController {
   })
   async enrollCourse(@Param('id') id: number, @CurrentUser() user: User) {
     const course = await this.courseService.enrollUserInCourseOrThrow(id, user);
+    return new CourseDto(course);
+  }
+
+  @Post(':id/generate-code')
+  @Auth({ action: Action.Create, subject: EnrollmentCode })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: Number,
+    description: 'Course ID',
+  })
+  @ApiBody({ type: CreateEnrollmentCodeDto })
+  async generateEnrollmentCode(
+    @Param('id') id: number,
+    @CurrentUser() user: User,
+    @Body() createEnrollmentCodeDto: CreateEnrollmentCodeDto,
+  ) {
+    const enrollmentCode = await this.courseService.generateEnrollmentCode(
+      id,
+      createEnrollmentCodeDto,
+      user,
+    );
+
+    return enrollmentCode;
+  }
+
+  @Post('/enroll-with-code')
+  @Auth({ action: Action.Enroll, subject: Course })
+  @ApiQuery({
+    name: 'code',
+    required: true,
+    type: String,
+  })
+  async enrollWithCode(
+    @Query() requesrEnrollmentCode: string,
+    @CurrentUser() user: User,
+  ) {
+    const course = await this.courseService.enrollUserInCourseWithCodeOrThrow(
+      requesrEnrollmentCode,
+      user,
+    );
+
     return new CourseDto(course);
   }
 }

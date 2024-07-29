@@ -9,12 +9,20 @@ import { Course } from './entities/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserRole } from '../user/enums/user-role.enum';
+import { EnrollmentCode } from './entities/enrollment-code.entity';
+import { CreateEnrollmentCodeDto } from './dtos/create-enrollment-code.dto';
+
+import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectRepository(Course)
     private courseRepository: Repository<Course>,
+    @InjectRepository(EnrollmentCode)
+    private enrollmentCodeRepository: Repository<EnrollmentCode>,
+    private configService: ConfigService,
   ) {}
 
   async createCourseWithUserAsTeacherOrThrow(
@@ -134,5 +142,61 @@ export class CourseService {
     course.students.push(user);
 
     return this.courseRepository.save(course);
+  }
+
+  async generateEnrollmentCode(
+    courseId: number,
+    createEnrollmentCodeDto: CreateEnrollmentCodeDto,
+    user: User,
+  ) {
+    const course = await this.findCourseByIdOrThrow(courseId);
+
+    const payload = {
+      sub: courseId,
+      exp: createEnrollmentCodeDto.expiration
+        ? createEnrollmentCodeDto.expiration.getTime() / 1000
+        : undefined,
+      oneTimeUse: createEnrollmentCodeDto.oneTimeUse,
+    };
+
+    const code = jwt.sign(payload, this.configService.get('JWT_SECRET'));
+
+    const enrollmentCode = this.enrollmentCodeRepository.create({
+      code,
+      course,
+      createdBy: user,
+      expiration: createEnrollmentCodeDto.expiration || undefined,
+      isUsed: createEnrollmentCodeDto.oneTimeUse,
+    });
+
+    return this.enrollmentCodeRepository.save(enrollmentCode);
+  }
+
+  async enrollUserInCourseWithCodeOrThrow(
+    requestEnrollmentCode: string,
+    user: User,
+  ) {
+    jwt.verify(requestEnrollmentCode, this.configService.get('JWT_SECRET'));
+
+    const enrollmentCode = await this.enrollmentCodeRepository.findOne({
+      where: { code: requestEnrollmentCode },
+      relations: { course: true },
+    });
+
+    if (!enrollmentCode) {
+      throw new NotFoundException('Invalid enrollment code');
+    }
+
+    if (enrollmentCode.isUsed || enrollmentCode.expiration < new Date()) {
+      throw new ForbiddenException('Enrollment code is invalid or expired');
+    }
+
+    enrollmentCode.isUsed = true;
+    await this.enrollmentCodeRepository.save(enrollmentCode);
+
+    enrollmentCode.course.students = enrollmentCode.course.students || [];
+    enrollmentCode.course.students.push(user);
+
+    return this.courseRepository.save(enrollmentCode.course);
   }
 }
