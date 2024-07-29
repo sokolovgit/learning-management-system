@@ -1,6 +1,21 @@
 import { Auth } from '../common/decorators/auth.decorator';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dtos/create-course.dto';
@@ -10,29 +25,35 @@ import { CurrentUser } from '../user/decorators/user.decorator';
 import { CourseDto } from './dtos/course.dto';
 import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
 import { PaginationQueryOptionsDto } from '../common/dtos/pagination-query-options.dto';
+import { Action } from '../abilities/enums/abilities.enum';
+import { Course } from './entities/course.entity';
 
-@Controller('course')
-@ApiTags('course')
+@Controller('courses')
+@ApiTags('courses')
+@UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
-  @Auth()
+  @Auth({ action: Action.Create, subject: Course })
   @Post()
   @ApiBody({ type: CreateCourseDto })
   async createCourse(
     @Body() createCourseDto: CreateCourseDto,
     @CurrentUser() user: User,
   ) {
-    const course = await this.courseService.createCourseWithUserAsTeacher(
-      createCourseDto,
-      user,
-    );
+    const course =
+      await this.courseService.createCourseWithUserAsTeacherOrThrow(
+        createCourseDto,
+        user,
+      );
     return new CourseDto(course);
   }
 
+  @ApiResponse({ status: 201, type: CourseDto })
+  @Auth({ action: Action.Read, subject: Course })
   @Get()
-  async getAllCourses() {
-    const courses = await this.courseService.findAllCoursesOrThrow();
+  async getCurrentUserCourses(@CurrentUser() user: User) {
+    const courses = await this.courseService.findUserCourses(user);
     return courses.map((course) => new CourseDto(course));
   }
 
@@ -70,6 +91,20 @@ export class CourseController {
   @Get(':id')
   async getCourseById(@Param('id') id: number) {
     const course = await this.courseService.findCourseByIdOrThrow(id);
+    return new CourseDto(course);
+  }
+
+  @Post(':id/enroll')
+  @Auth({ action: Action.Enroll, subject: Course })
+  @ApiResponse({ status: 200, type: CourseDto })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: Number,
+    description: 'Course ID',
+  })
+  async enrollCourse(@Param('id') id: number, @CurrentUser() user: User) {
+    const course = await this.courseService.enrollUserInCourseOrThrow(id, user);
     return new CourseDto(course);
   }
 }

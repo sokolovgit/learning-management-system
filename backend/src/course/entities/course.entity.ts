@@ -6,6 +6,8 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Lesson } from '../../lesson/entities/lesson.entity';
@@ -24,7 +26,8 @@ export class Course {
   @ManyToOne(() => User, (user) => user.teachingCourses)
   teacher: User;
 
-  @OneToMany(() => User, (user) => user.enrolledCourses)
+  @ManyToMany(() => User, (user) => user.enrolledCourses)
+  @JoinTable()
   students: User[];
 
   @OneToMany(() => Lesson, (lesson) => lesson.course)
