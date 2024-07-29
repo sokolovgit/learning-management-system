@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 import { Course } from '../../course/entities/course.entity';
@@ -38,7 +39,7 @@ export class User {
   @OneToMany(() => Course, (course) => course.teacher)
   teachingCourses: Course[];
 
-  @OneToMany(() => Course, (course) => course.students)
+  @ManyToMany(() => Course, (course) => course.students)
   enrolledCourses: Course[];
 
   @OneToMany(() => Homework, (homework) => homework.student)

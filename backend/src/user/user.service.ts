@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
 import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dtos/update-user.dto';
 
@@ -22,30 +21,33 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async findAllPaginated(
-    page?: number,
-    pageSize?: number,
-  ): Promise<PaginatedResponseDto<User>> {
-    const actualPage = page || 1;
-    const actualPageSize: number = pageSize || 10;
-
-    const users: User[] = await this.userRepository.find({
-      skip: (actualPage - 1) * actualPageSize,
-      take: actualPageSize,
+  async findAllPaginated(page: number, pageSize: number) {
+    const [users, total] = await this.userRepository.findAndCount({
+      relations: {
+        teachingCourses: true,
+        enrolledCourses: true,
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
 
-    const total: number = await this.userRepository.count();
-    const totalPages: number = Math.ceil(total / actualPageSize);
+    const totalPages: number = Math.ceil(total / pageSize);
 
-    const paginatedResponse: PaginatedResponseDto<User> =
-      new PaginatedResponseDto<User>(users, total, actualPage, totalPages);
-
-    return paginatedResponse;
+    return {
+      users,
+      total,
+      page,
+      totalPages,
+    };
   }
 
   async findOneByIdOrThrow(id: number): Promise<User> {
-    const user: User = await this.userRepository.findOneBy({
-      id: id,
+    const user: User = await this.userRepository.findOne({
+      where: { id: id },
+      relations: {
+        teachingCourses: true,
+        enrolledCourses: true,
+      },
     });
 
     if (!user) {
