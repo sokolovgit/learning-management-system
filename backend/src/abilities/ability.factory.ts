@@ -37,23 +37,31 @@ export class AbilityFactory {
       can(Action.Update, Course);
       can(Action.Delete, Course);
       can(Action.Read, Course);
+
       can(Action.Read, Lesson);
+
       can(Action.Read, Homework);
       can(Action.Update, Homework);
+
       can(Action.Create, Grade);
       can(Action.Update, Grade);
       can(Action.Read, Grade);
     } else {
       can(Action.Read, Course);
+      can(Action.Enroll, Course);
+
       can(Action.Read, Lesson);
+
       can(Action.Create, Homework);
       can(Action.Update, Homework);
       can(Action.Read, Homework);
+
       can(Action.Read, Grade);
 
       cannot(Action.Create, Course);
       cannot(Action.Update, Course);
       cannot(Action.Delete, Course);
+
       cannot(Action.Create, Grade);
       cannot(Action.Update, Grade);
     }
