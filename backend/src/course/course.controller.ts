@@ -6,16 +6,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dtos/create-course.dto';
@@ -30,7 +21,6 @@ import { Course } from './entities/course.entity';
 
 @Controller('courses')
 @ApiTags('courses')
-@UseInterceptors(ClassSerializerInterceptor)
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
