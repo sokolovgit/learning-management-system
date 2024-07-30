@@ -97,8 +97,6 @@ export class EnrollmentCodeService {
     const currentUtcDate = new Date();
     const expirationDateUtc = new Date(enrollmentCode.expiration);
 
-    console.log(expirationDateUtc, currentUtcDate);
-
     if (enrollmentCode.expiration && expirationDateUtc < currentUtcDate) {
       enrollmentCode.status = EnrollmentCodeStatusEnum.EXPIRED;
       await this.enrollmentCodeRepository.save(enrollmentCode);
