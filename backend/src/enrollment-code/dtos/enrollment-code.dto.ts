@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CourseDto } from '../../course/dtos/course.dto';
 import { UserDto } from '../../user/dtos/user.dto';
 import { EnrollmentCode } from '../entities/enrollment-code.entity';
-import { EnrollmentCodeStatusEnum } from '../enums /enrollment-code-status.enum';
+import { EnrollmentCodeStatusEnum } from '../enums/enrollment-code-status.enum';
 
 export class EnrollmentCodeDto {
   @ApiProperty({
@@ -31,7 +31,7 @@ export class EnrollmentCodeDto {
 
   @ApiProperty({
     description: 'The status of the enrollment code',
-    type: EnrollmentCodeStatusEnum,
+    type: () => EnrollmentCodeStatusEnum,
     example: EnrollmentCodeStatusEnum.ACTIVE,
     required: true,
   })
@@ -55,16 +55,16 @@ export class EnrollmentCodeDto {
 
   @ApiProperty({
     description: 'The course associated with the enrollment code',
-    type: () => [CourseDto],
-    example: [CourseDto],
+    type: () => CourseDto,
+    example: CourseDto,
     required: true,
   })
   course: CourseDto;
 
   @ApiProperty({
     description: 'The user who created the enrollment code',
-    type: () => [UserDto],
-    example: [UserDto],
+    type: () => UserDto,
+    example: UserDto,
     required: true,
   })
   createdBy: UserDto;

@@ -14,7 +14,7 @@ import { User } from '../user/entities/user.entity';
 import { CourseService } from '../course/course.service';
 
 import * as crypto from 'crypto';
-import { EnrollmentCodeStatusEnum } from './enums /enrollment-code-status.enum';
+import { EnrollmentCodeStatusEnum } from './enums/enrollment-code-status.enum';
 
 @Injectable()
 export class EnrollmentCodeService {
@@ -116,7 +116,7 @@ export class EnrollmentCodeService {
     );
   }
 
-  @Cron('0 0 * * *') // trigger every day at midnight
+  @Cron('0 0 * * *', { name: 'markInvalidCodes' }) // trigger every day at midnight
   async markInvalidCodes() {
     const now = new Date();
 

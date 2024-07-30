@@ -29,14 +29,14 @@ export class CourseDto {
     type: () => UserDto,
     example: UserDto,
   })
-  teacher: UserDto | undefined;
+  teacher?: UserDto;
 
   @ApiProperty({
     description: 'The students enrolled in the course',
     type: () => [UserDto],
     example: [UserDto],
   })
-  students: UserDto[] | undefined;
+  students?: UserDto[];
 
   constructor(course: Course) {
     this.id = course.id;
