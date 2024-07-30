@@ -8,7 +8,6 @@ import { LoginDto } from './dtos/login.dto';
 
 import { Auth } from '../common/decorators/auth.decorator';
 import { AuthService } from './auth.service';
-// import { Action } from '../abilities/enums/abilities.enum';
 import { User } from '../user/entities/user.entity';
 import { CurrentUser } from '../user/decorators/user.decorator';
 
@@ -27,7 +26,7 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: LoginDto })
   async login(@CurrentUser() user: LoginDto) {
-    return this.authService.login(user);
+    return this.authService.loginOrThrow(user);
   }
 
   @Get('verify-email')

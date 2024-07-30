@@ -1,7 +1,14 @@
-import { UserRole } from '../enums/user-role.enum';
-import { IsString, IsNotEmpty, IsEmail, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../entities/user.entity';
+import { CourseDto } from '../../course/dtos/course.dto';
+import { UserRole } from '../enums/user-role.enum';
 
 export class UserDto {
   @IsNotEmpty()
@@ -53,6 +60,22 @@ export class UserDto {
   role: UserRole;
 
   @ApiProperty({
+    description: 'Courses that the user is teaching',
+    type: () => [CourseDto],
+    example: [CourseDto],
+  })
+  @IsOptional()
+  teachingCourses: CourseDto[] | undefined;
+
+  @ApiProperty({
+    description: 'Courses that the user is enrolled in',
+    type: () => [CourseDto],
+    example: [CourseDto],
+  })
+  @IsOptional()
+  enrolledCourses: CourseDto[] | undefined;
+
+  @ApiProperty({
     description: 'The creation date of the user',
     type: 'string',
     example: '2021-07-09T11:38:10.000Z',
@@ -72,6 +95,14 @@ export class UserDto {
     this.email = user.email;
     this.isEmailVerified = user.isEmailVerified;
     this.role = user.role;
+    this.teachingCourses =
+      user.teachingCourses && user.teachingCourses.length > 0
+        ? user.teachingCourses.map((course) => new CourseDto(course))
+        : undefined;
+    this.enrolledCourses =
+      user.enrolledCourses && user.enrolledCourses.length > 0
+        ? user.enrolledCourses.map((course) => new CourseDto(course))
+        : undefined;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
   }

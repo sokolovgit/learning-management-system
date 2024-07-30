@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AbilitiesModule } from './abilities/abilities.module';
 import { CourseModule } from './course/course.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CourseModule } from './course/course.module';
     UserModule,
     CourseModule,
     AbilitiesModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],

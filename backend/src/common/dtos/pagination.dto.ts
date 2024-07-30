@@ -1,4 +1,6 @@
 // pagination.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
+
 export interface PaginationInterface<T> {
   items: T[];
   totalItems: number;
@@ -9,11 +11,42 @@ export interface PaginationInterface<T> {
 }
 
 export class PaginatedResponseDto<T> implements PaginationInterface<T> {
+  @ApiProperty({
+    type: [Object],
+    description: 'The items in the current page',
+  })
   items: T[];
+
+  @ApiProperty({
+    type: Number,
+    description: 'The total number of items',
+  })
   totalItems: number;
+
+  @ApiProperty({
+    type: Number,
+    description: 'The current page number',
+  })
   currentPage: number;
+
+  @ApiProperty({
+    type: Number,
+    description: 'The total number of pages',
+  })
   totalPages: number;
+
+  @ApiProperty({
+    type: Number,
+    description: 'The next page number',
+    required: false,
+  })
   nextPage?: number;
+
+  @ApiProperty({
+    type: Number,
+    description: 'The previous page number',
+    required: false,
+  })
   previousPage?: number;
 
   constructor(

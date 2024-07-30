@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../user/user.service';
@@ -38,8 +42,12 @@ export class AuthService {
     return user;
   }
 
-  async login(user: LoginDto) {
+  async loginOrThrow(user: LoginDto) {
     const foundUser = await this.userService.findOneByEmailOrThrow(user.email);
+
+    if (!foundUser.isEmailVerified) {
+      throw new ForbiddenException('Email is not verified');
+    }
 
     const payload = {
       email: foundUser.email,

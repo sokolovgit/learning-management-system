@@ -13,6 +13,7 @@ import { Homework } from '../homework/entities/homework.entity';
 import { Grade } from '../grade/entities/grade.entity';
 import { UserRole } from '../user/enums/user-role.enum';
 import { Action } from './enums/abilities.enum';
+import { EnrollmentCode } from '../enrollment-code/entities/enrollment-code.entity';
 
 export type Subjects =
   | InferSubjects<
@@ -21,6 +22,7 @@ export type Subjects =
       | typeof Lesson
       | typeof Homework
       | typeof Grade
+      | typeof EnrollmentCode
     >
   | 'all';
 export type AppAbility = PureAbility<[Action, Subjects]>;
@@ -37,34 +39,42 @@ export class AbilityFactory {
       can(Action.Update, Course);
       can(Action.Delete, Course);
       can(Action.Read, Course);
+
+      can(Action.Create, EnrollmentCode);
+
       can(Action.Read, Lesson);
+
       can(Action.Read, Homework);
-      can(Action.Update, Homework, {
-        lesson: { course: { teacher: { id: user.id } } },
-      });
+      can(Action.Update, Homework);
+
       can(Action.Create, Grade);
-      can(Action.Update, Grade, {
-        homework: { lesson: { course: { teacher: { id: user.id } } } },
-      });
+      can(Action.Update, Grade);
       can(Action.Read, Grade);
     } else {
       can(Action.Read, Course);
+      can(Action.Enroll, Course);
+
       can(Action.Read, Lesson);
+
       can(Action.Create, Homework);
-      can(Action.Update, Homework, { student: { id: user.id } });
-      can(Action.Read, Homework, { student: { id: user.id } });
-      can(Action.Read, Grade, { student: { id: user.id } });
+      can(Action.Update, Homework);
+      can(Action.Read, Homework);
+
+      can(Action.Read, Grade);
 
       cannot(Action.Create, Course);
       cannot(Action.Update, Course);
       cannot(Action.Delete, Course);
+
       cannot(Action.Create, Grade);
       cannot(Action.Update, Grade);
     }
 
-    return build({
+    const ability = build({
       detectSubjectType: (item) =>
         item.constructor as ExtractSubjectType<Subjects>,
     });
+
+    return ability;
   }
 }

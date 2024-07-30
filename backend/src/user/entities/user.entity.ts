@@ -5,11 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 import { Course } from '../../course/entities/course.entity';
 import { Homework } from '../../homework/entities/homework.entity';
 import { Grade } from '../../grade/entities/grade.entity';
+import { EnrollmentCode } from '../../enrollment-code/entities/enrollment-code.entity';
 
 @Entity()
 export class User {
@@ -38,7 +40,7 @@ export class User {
   @OneToMany(() => Course, (course) => course.teacher)
   teachingCourses: Course[];
 
-  @OneToMany(() => Course, (course) => course.students)
+  @ManyToMany(() => Course, (course) => course.students)
   enrolledCourses: Course[];
 
   @OneToMany(() => Homework, (homework) => homework.student)
@@ -49,6 +51,9 @@ export class User {
 
   @OneToMany(() => Grade, (grade) => grade.student)
   receivedGrades: Grade[];
+
+  @OneToMany(() => EnrollmentCode, (code) => code.createdBy)
+  createdEnrollmentCodes: EnrollmentCode[];
 
   @CreateDateColumn()
   createdAt: Date;
