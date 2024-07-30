@@ -13,7 +13,7 @@ import { Homework } from '../homework/entities/homework.entity';
 import { Grade } from '../grade/entities/grade.entity';
 import { UserRole } from '../user/enums/user-role.enum';
 import { Action } from './enums/abilities.enum';
-import { EnrollmentCode } from '../course/entities/enrollment-code.entity';
+import { EnrollmentCode } from '../enrollment-code/entities/enrollment-code.entity';
 
 export type Subjects =
   | InferSubjects<

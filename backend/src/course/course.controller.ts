@@ -18,13 +18,18 @@ import { PaginatedResponseDto } from '../common/dtos/pagination.dto';
 import { PaginationQueryOptionsDto } from '../common/dtos/pagination-query-options.dto';
 import { Action } from '../abilities/enums/abilities.enum';
 import { Course } from './entities/course.entity';
-import { EnrollmentCode } from './entities/enrollment-code.entity';
-import { CreateEnrollmentCodeDto } from './dtos/create-enrollment-code.dto';
+import { EnrollmentCode } from '../enrollment-code/entities/enrollment-code.entity';
+import { CreateEnrollmentCodeDto } from '../enrollment-code/dtos/create-enrollment-code.dto';
+import { EnrollmentCodeService } from '../enrollment-code/enrollment-code.service';
+import { EnrollmentCodeDto } from '../enrollment-code/dtos/enrollment-code.dto';
 
 @Controller('courses')
 @ApiTags('courses')
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly enrollmentCodeService: EnrollmentCodeService,
+  ) {}
 
   @Auth({ action: Action.Create, subject: Course })
   @Post()
@@ -112,15 +117,17 @@ export class CourseController {
   async generateEnrollmentCode(
     @Param('id') id: number,
     @CurrentUser() user: User,
-    @Body() createEnrollmentCodeDto: CreateEnrollmentCodeDto,
+    @Body()
+    createEnrollmentCodeDto: CreateEnrollmentCodeDto,
   ) {
-    const enrollmentCode = await this.courseService.generateEnrollmentCode(
-      id,
-      createEnrollmentCodeDto,
-      user,
-    );
+    const enrollmentCode =
+      await this.enrollmentCodeService.generateEnrollmentCode(
+        id,
+        createEnrollmentCodeDto,
+        user,
+      );
 
-    return enrollmentCode;
+    return new EnrollmentCodeDto(enrollmentCode);
   }
 
   @Post('/enroll-with-code')
@@ -131,13 +138,14 @@ export class CourseController {
     type: String,
   })
   async enrollWithCode(
-    @Query() requesrEnrollmentCode: string,
+    @Query('code') requestEnrollmentCode: string,
     @CurrentUser() user: User,
   ) {
-    const course = await this.courseService.enrollUserInCourseWithCodeOrThrow(
-      requesrEnrollmentCode,
-      user,
-    );
+    const course =
+      await this.enrollmentCodeService.enrollUserInCourseWithCodeOrThrow(
+        requestEnrollmentCode,
+        user,
+      );
 
     return new CourseDto(course);
   }

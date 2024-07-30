@@ -11,6 +11,7 @@ import { UserRole } from '../enums/user-role.enum';
 import { Course } from '../../course/entities/course.entity';
 import { Homework } from '../../homework/entities/homework.entity';
 import { Grade } from '../../grade/entities/grade.entity';
+import { EnrollmentCode } from '../../enrollment-code/entities/enrollment-code.entity';
 
 @Entity()
 export class User {
@@ -50,6 +51,9 @@ export class User {
 
   @OneToMany(() => Grade, (grade) => grade.student)
   receivedGrades: Grade[];
+
+  @OneToMany(() => EnrollmentCode, (code) => code.createdBy)
+  createdEnrollmentCodes: EnrollmentCode[];
 
   @CreateDateColumn()
   createdAt: Date;

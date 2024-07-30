@@ -8,11 +8,10 @@ import {
   UpdateDateColumn,
   JoinTable,
   ManyToMany,
-  OneToOne,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Lesson } from '../../lesson/entities/lesson.entity';
-import { EnrollmentCode } from './enrollment-code.entity';
+import { EnrollmentCode } from '../../enrollment-code/entities/enrollment-code.entity';
 
 @Entity()
 export class Course {
@@ -35,8 +34,8 @@ export class Course {
   @OneToMany(() => Lesson, (lesson) => lesson.course)
   lessons: Lesson[];
 
-  @OneToOne(() => EnrollmentCode, (code) => code.course)
-  enrollmentCode: EnrollmentCode;
+  @OneToMany(() => EnrollmentCode, (code) => code.course)
+  enrollmentCodes: EnrollmentCode[];
 
   @CreateDateColumn()
   createdAt: Date;
