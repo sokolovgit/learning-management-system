@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -13,9 +17,17 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async createUserWithHashedPassword(
+  async createUserWithHashedPasswordOrThrow(
     createUserDto: CreateUserDto,
   ): Promise<User> {
+    const isEmailTaken = await this.userRepository.findOneBy({
+      email: createUserDto.email,
+    });
+
+    if (isEmailTaken) {
+      throw new BadRequestException('Email is already taken');
+    }
+
     createUserDto.password = bcrypt.hashSync(createUserDto.password, 10);
 
     const user = this.userRepository.create({

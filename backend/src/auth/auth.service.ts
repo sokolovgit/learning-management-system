@@ -8,13 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dtos/create-user.dto';
 
-import * as bcrypt from 'bcryptjs';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dtos/login.dto';
 import { UserRole } from '../user/enums/user-role.enum';
 import { MailerService } from '../mailer/mailer.service';
-import { UpdateUserDto } from '../user/dtos/update-user.dto';
-import { ConfigService } from '@nestjs/config';
+
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +21,6 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private mailerService: MailerService,
-    private configService: ConfigService,
   ) {}
 
   async validateUserWithHashedPassword(
@@ -64,7 +62,7 @@ export class AuthService {
 
   async register(createUserDto: CreateUserDto): Promise<User> {
     const user =
-      await this.userService.createUserWithHashedPassword(createUserDto);
+      await this.userService.createUserWithHashedPasswordOrThrow(createUserDto);
 
     const payload = {
       email: user.email,
@@ -72,7 +70,6 @@ export class AuthService {
     };
     const token = this.jwtService.sign(payload);
 
-    const frontendUrl = this.configService.get<string>('frontendUrl');
     const url = `http://localhost:3000/auth/verify-email?token=${token}`;
 
     await this.mailerService.sendMail(user.email, 'Verify your email', url);

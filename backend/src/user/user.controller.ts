@@ -54,7 +54,7 @@ export class UserController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.createUserWithHashedPassword(createUserDto);
+    return this.userService.createUserWithHashedPasswordOrThrow(createUserDto);
   }
 
   @Delete(':id')
