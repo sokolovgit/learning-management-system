@@ -1,5 +1,5 @@
 import type { User } from '@/types/user'
-import type { UserRoleEnum } from '@/enums/userRoleEnum'
+import type { UserRole } from '@/enums/userRole'
 
 export interface LoginRequest {
   email: string;
@@ -15,7 +15,7 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  role: UserRoleEnum;
+  role: UserRole;
 }
 
 export interface RegisterResponse {

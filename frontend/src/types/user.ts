@@ -1,13 +1,13 @@
-import type { UserRoleEnum } from '@/enums/userRoleEnum'
+import type { UserRole } from '@/enums/userRole'
 
 export interface User {
-  id: number;
-  username: string;
-  email: string;
-  isEmailVerified: boolean;
-  role: UserRoleEnum;
+  id: number
+  username: string
+  email: string
+  isEmailVerified: boolean
+  role: UserRole
   // teachingCourses?: Course[];
   // enrolledCourses?: Course[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string
+  updatedAt: string
 }

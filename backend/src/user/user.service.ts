@@ -17,8 +17,15 @@ export class UserService {
     createUserDto: CreateUserDto,
   ): Promise<User> {
     createUserDto.password = bcrypt.hashSync(createUserDto.password, 10);
-    const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+
+    const user = this.userRepository.create({
+      username: createUserDto.username,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      role: createUserDto.role,
+    });
+
+    return await this.userRepository.save(user);
   }
 
   async findAllPaginated(page: number, pageSize: number) {
@@ -77,6 +84,13 @@ export class UserService {
     }
 
     return this.findOneByIdOrThrow(id);
+  }
+
+  async markEmailAsVerified(userId: number) {
+    const updateUserDto = new UpdateUserDto();
+    updateUserDto.isEmailVerified = true;
+
+    await this.update(userId, updateUserDto);
   }
 
   async remove(id: number): Promise<void> {

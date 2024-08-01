@@ -6,6 +6,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: () => import('../pages/HomePage.vue')
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('../pages/DashboardPage.vue')
   }
 ]
 
@@ -15,18 +20,18 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
+  const authStore = useAuthStore()
   if (to.meta.requiresAuth) {
     if (!authStore.user) {
-      next('/login');
+      next('/login')
     } else if (!authStore.user.isEmailVerified) {
-      next('/verify-email');
+      next('/verify-email')
     } else {
-      next();
+      next()
     }
   } else {
-    next();
+    next()
   }
-});
+})
 
-export default router;
+export default router

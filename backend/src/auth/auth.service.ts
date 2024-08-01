@@ -14,6 +14,7 @@ import { LoginDto } from './dtos/login.dto';
 import { UserRole } from '../user/enums/user-role.enum';
 import { MailerService } from '../mailer/mailer.service';
 import { UpdateUserDto } from '../user/dtos/update-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private mailerService: MailerService,
+    private configService: ConfigService,
   ) {}
 
   async validateUserWithHashedPassword(
@@ -70,6 +72,7 @@ export class AuthService {
     };
     const token = this.jwtService.sign(payload);
 
+    const frontendUrl = this.configService.get<string>('frontendUrl');
     const url = `http://localhost:3000/auth/verify-email?token=${token}`;
 
     await this.mailerService.sendMail(user.email, 'Verify your email', url);
@@ -86,14 +89,17 @@ export class AuthService {
         throw new BadRequestException('Email already verified');
       }
 
-      const updateUserDto = new UpdateUserDto();
-      updateUserDto.isEmailVerified = true;
+      await this.userService.markEmailAsVerified(user.id);
 
-      await this.userService.update(user.id, updateUserDto);
-
-      return { message: 'Email verified successfully' };
+      return {
+        status: 'success',
+        message: 'Email verified successfully',
+      };
     } catch (error) {
-      return { message: 'Invalid or expired token' };
+      return {
+        status: 'error',
+        message: 'Invalid or expired token',
+      };
     }
   }
 }
