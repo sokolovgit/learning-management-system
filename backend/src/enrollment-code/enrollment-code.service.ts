@@ -21,8 +21,6 @@ export class EnrollmentCodeService {
   constructor(
     @InjectRepository(EnrollmentCode)
     private enrollmentCodeRepository: Repository<EnrollmentCode>,
-    @InjectRepository(Course)
-    private courseRepository: Repository<Course>,
     private courseService: CourseService,
   ) {}
 
@@ -31,13 +29,8 @@ export class EnrollmentCodeService {
     createEnrollmentCodeDto: CreateEnrollmentCodeDto,
     user: User,
   ): Promise<EnrollmentCode> {
-    const course = await this.courseRepository.findOne({
-      where: {
-        id: courseId,
-      },
-      relations: {
-        teacher: true,
-      },
+    const course = await this.courseService.findCourseByIdOrThrow(courseId, {
+      teacher: true,
     });
 
     if (!course) {
