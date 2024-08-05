@@ -16,6 +16,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../pages/DashboardPage.vue')
+  },
+  {
+    path: '/courses',
+    name: 'Courses',
+    component: () => import('../pages/CoursesPage.vue')
+  },
+  {
+    path: '/courses/:id',
+    name: 'Course',
+    component: () => import('../pages/CoursePage.vue')
   }
 ]
 
