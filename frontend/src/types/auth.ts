@@ -2,26 +2,25 @@ import type { User } from '@/types/user'
 import type { UserRole } from '@/enums/userRole'
 
 export interface LoginRequest {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export interface LoginResponse {
-  token: string;
-  user: User;
+  access_token: string
 }
 
 export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-  role: UserRole;
+  username: string
+  email: string
+  password: string
+  role: UserRole
 }
 
 export interface RegisterResponse {
-  user: User;
+  user: User
 }
 
 export interface VerifyEmailRequest {
-  token: string;
+  token: string
 }
