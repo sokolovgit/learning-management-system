@@ -87,7 +87,10 @@ export class CourseController {
 
   @Get(':id')
   async getCourseById(@Param('id') id: number) {
-    const course = await this.courseService.findCourseByIdOrThrow(id);
+    const course = await this.courseService.findCourseByIdOrThrow(id, {
+      teacher: true,
+      students: true,
+    });
     return new CourseDto(course);
   }
 
