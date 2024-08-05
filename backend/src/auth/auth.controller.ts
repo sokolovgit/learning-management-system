@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from '../common/guards/local-auth.guard';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
@@ -11,10 +19,16 @@ import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
 import { CurrentUser } from '../user/decorators/user.decorator';
 
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
@@ -30,8 +44,16 @@ export class AuthController {
   }
 
   @Get('verify-email')
-  async verifyEmail(@Query('token') token: string) {
-    return this.authService.verifyEmail(token);
+  async verifyEmail(@Query('token') token: string, @Res() res: Response) {
+    const result = await this.authService.verifyEmail(token);
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+
+    if (result.status === 'success') {
+      return res.redirect(`${frontendUrl}/dashboard`);
+    }
+
+    console.log('Error verifying email:', result.message);
+    return;
   }
 
   @Auth()

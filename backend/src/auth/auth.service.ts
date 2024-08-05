@@ -8,12 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dtos/create-user.dto';
 
-import * as bcrypt from 'bcryptjs';
 import { User } from '../user/entities/user.entity';
 import { LoginDto } from './dtos/login.dto';
 import { UserRole } from '../user/enums/user-role.enum';
 import { MailerService } from '../mailer/mailer.service';
-import { UpdateUserDto } from '../user/dtos/update-user.dto';
+
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -62,7 +62,7 @@ export class AuthService {
 
   async register(createUserDto: CreateUserDto): Promise<User> {
     const user =
-      await this.userService.createUserWithHashedPassword(createUserDto);
+      await this.userService.createUserWithHashedPasswordOrThrow(createUserDto);
 
     const payload = {
       email: user.email,
@@ -86,14 +86,17 @@ export class AuthService {
         throw new BadRequestException('Email already verified');
       }
 
-      const updateUserDto = new UpdateUserDto();
-      updateUserDto.isEmailVerified = true;
+      await this.userService.markEmailAsVerified(user.id);
 
-      await this.userService.update(user.id, updateUserDto);
-
-      return { message: 'Email verified successfully' };
+      return {
+        status: 'success',
+        message: 'Email verified successfully',
+      };
     } catch (error) {
-      return { message: 'Invalid or expired token' };
+      return {
+        status: 'error',
+        message: 'Invalid or expired token',
+      };
     }
   }
 }
