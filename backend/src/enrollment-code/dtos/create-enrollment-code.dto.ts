@@ -6,7 +6,7 @@ export class CreateEnrollmentCodeDto {
     description: 'The date when the enrollment code will expire',
     required: false,
     type: String,
-    example: '2025-07-01T00:00:00.000Z', // ISO 8601 format
+    example: '2024-08-05T00:00:00.000Z', // ISO 8601 format
   })
   @IsOptional()
   @IsDateString()

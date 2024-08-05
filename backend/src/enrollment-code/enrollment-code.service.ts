@@ -75,18 +75,6 @@ export class EnrollmentCodeService {
       throw new NotFoundException('Invalid enrollment code');
     }
 
-    if (enrollmentCode.status !== EnrollmentCodeStatusEnum.ACTIVE) {
-      throw new ForbiddenException('Enrollment code is not active');
-    }
-
-    if (enrollmentCode.uses >= enrollmentCode.maxUses) {
-      enrollmentCode.status = EnrollmentCodeStatusEnum.USED;
-      await this.enrollmentCodeRepository.save(enrollmentCode);
-      throw new ForbiddenException(
-        'Enrollment code has reached its maximum uses',
-      );
-    }
-
     const currentUtcDate = new Date();
     const expirationDateUtc = new Date(enrollmentCode.expiration);
 
