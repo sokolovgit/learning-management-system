@@ -18,12 +18,14 @@
               name="email"
               type="email"
               v-model="form.email"
-              @blur="v$.email.$touch()"
-              :class="{ 'border-red-500': v$.email.$invalid && v$.email.$dirty }"
+              @blur="vuelidate.email.$touch()"
+              :class="{ 'border-red-500': vuelidate.email.$invalid && vuelidate.email.$dirty }"
               autocomplete="email"
               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
-            <span v-if="v$.email.$invalid && v$.email.$dirty" class="text-red-500 text-sm"
+            <span
+              v-if="vuelidate.email.$invalid && vuelidate.email.$dirty"
+              class="text-red-500 text-sm"
               >Enter a valid email</span
             >
           </div>
@@ -47,12 +49,17 @@
               name="password"
               type="password"
               v-model="form.password"
-              @blur="v$.password.$touch()"
-              :class="{ 'border-red-500': v$.password.$invalid && v$.password.$dirty }"
+              @blur="vuelidate.password.$touch()"
+              :class="{
+                'border-red-500': vuelidate.password.$invalid && vuelidate.password.$dirty
+              }"
               autocomplete="current-password"
               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
-            <span v-if="v$.password.$invalid && v$.password.$dirty" class="text-red-500 text-sm">
+            <span
+              v-if="vuelidate.password.$invalid && vuelidate.password.$dirty"
+              class="text-red-500 text-sm"
+            >
               Password must be at least 6 characters
             </span>
           </div>
@@ -89,16 +96,17 @@ const rules = {
 }
 
 const authStore = useAuthStore()
-const v$ = useVuelidate(rules, form)
+const vuelidate = useVuelidate(rules, form)
 
-const onSubmit = () => {
-  v$.value.$touch()
+const onSubmit = async () => {
+  vuelidate.value.$touch()
 
-  if (v$.value.$invalid) {
+  if (vuelidate.value.$invalid) {
     console.log('Invalid form')
+    return
   }
 
-  authStore.login(form.value)
+  await authStore.login(form.value)
 }
 </script>
 
