@@ -139,6 +139,6 @@ export class CourseService {
     course.students = course.students || [];
     course.students.push(user);
 
-    return this.courseRepository.save(course);
+    return await this.courseRepository.save(course);
   }
 }
