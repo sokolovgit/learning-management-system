@@ -1,4 +1,3 @@
-// frontend/src/axios.ts
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -11,15 +10,25 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    } else {
-      console.error('No token found in localStorage')
+    const authStore = useAuthStore()
+    if (authStore.token) {
+      config.headers.Authorization = `Bearer ${authStore.token}`
     }
     return config
   },
   (error) => Promise.reject(error)
+)
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const authStore = useAuthStore()
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // Token is invalid or expired
+      authStore.logout()
+    }
+    return Promise.reject(error)
+  }
 )
 
 export default apiClient

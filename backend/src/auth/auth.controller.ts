@@ -39,8 +39,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  async login(@CurrentUser() user: LoginDto) {
-    return this.authService.loginOrThrow(user);
+  async login(@CurrentUser() loginUserDto: LoginDto) {
+    const { access_token, user } =
+      await this.authService.loginOrThrow(loginUserDto);
+
+    return {
+      access_token,
+      user: new UserDto(user),
+    };
   }
 
   @Get('verify-email')
@@ -54,6 +60,12 @@ export class AuthController {
 
     console.log('Error verifying email:', result.message);
     return;
+  }
+
+  @Auth()
+  @Get('me')
+  async getCurrentUser(@CurrentUser() user: User) {
+    return new UserDto(user);
   }
 
   @Auth()

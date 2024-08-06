@@ -9,6 +9,7 @@ import {
   type VerifyEmailRequest
 } from '@/types/auth'
 import apiClient from '@/axios'
+import { jwtDecode } from 'jwt-decode'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -27,18 +28,33 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (credentials: LoginRequest): Promise<void> => {
     const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
     token.value = response.data.access_token
-    localStorage.setItem('token', token.value)
+    user.value = response.data.user
+  }
+
+  const isAuthenticated = (): boolean => {
+    return !!user.value && !!token.value
+  }
+
+  const isTokenExpired = (): boolean => {
+    if (!token.value) {
+      return true
+    }
+
+    const decodedToken: { exp: number } = jwtDecode(token.value)
+
+    return decodedToken.exp * 1000 < Date.now()
   }
 
   const logout = (): void => {
     user.value = null
     token.value = null
-    localStorage.removeItem('token')
   }
 
   return {
     user,
     token,
+    isAuthenticated,
+    isTokenExpired,
     register,
     verifyEmail,
     login,
