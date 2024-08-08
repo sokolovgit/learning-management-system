@@ -13,7 +13,6 @@ import { jwtDecode } from 'jwt-decode'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
-  const token = ref<string | null>(null)
 
   const register = async (userData: RegisterRequest): Promise<void> => {
     console.log(userData)
@@ -27,32 +26,32 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (credentials: LoginRequest): Promise<void> => {
     const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
-    token.value = response.data.access_token
+    localStorage.setItem('token', response.data.access_token)
     user.value = response.data.user
   }
 
   const isAuthenticated = (): boolean => {
-    return !!user.value && !!token.value
+    return !!localStorage.getItem('token')
   }
 
   const isTokenExpired = (): boolean => {
-    if (!token.value) {
+    const token = localStorage.getItem('token')
+    if (!token) {
       return true
     }
 
-    const decodedToken: { exp: number } = jwtDecode(token.value)
+    const decodedToken: { exp: number } = jwtDecode(token)
 
     return decodedToken.exp * 1000 < Date.now()
   }
 
   const logout = (): void => {
     user.value = null
-    token.value = null
+    localStorage.removeItem('token')
   }
 
   return {
     user,
-    token,
     isAuthenticated,
     isTokenExpired,
     register,

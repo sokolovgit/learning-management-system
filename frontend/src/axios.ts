@@ -10,21 +10,19 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const authStore = useAuthStore()
-    if (authStore.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
   (error) => Promise.reject(error)
 )
-
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const authStore = useAuthStore()
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Token is invalid or expired
       authStore.logout()
     }
     return Promise.reject(error)

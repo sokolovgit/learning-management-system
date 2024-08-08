@@ -44,14 +44,13 @@ router.beforeEach((to, from, next) => {
     console.log('Not authenticated')
     authStore.logout()
     next({ name: 'Login' })
-  }
-  if (to.meta.requiresAuth && authStore.isTokenExpired()) {
+  } else if (to.meta.requiresAuth && authStore.isTokenExpired()) {
     console.log('Token expired')
     authStore.logout()
     next({ name: 'Login' })
+  } else {
+    next()
   }
-
-  next()
 })
 
 export default router
