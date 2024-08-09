@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <h2 class="text-2xl text-black font-bold text-center pt-10 mx-auto">Your courses</h2>
-    <div class="border-4 p-10">
-      <ul>
-        <li v-for="course in courses" :key="course.id">
-          <CourseElement :course="course" />
-        </li>
-      </ul>
+  <div class="justify-center flex pt-10">
+    <div class="w-3/4 rounded-md">
+      <h2 class="text-2xl text-black font-bold text-center pt-10 mx-auto">Your courses</h2>
+      <DataView class="rounded-md" :value="courses">
+        <template #list="slotProps">
+          <template v-for="course in slotProps.items">
+            <CourseCard :course="course" />
+          </template>
+        </template>
+      </DataView>
     </div>
   </div>
 </template>
@@ -14,8 +16,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useCourseStore } from '@/stores/courseStore'
-import CourseElement from '@/components/courses/CourseListElement.vue'
 import type { Course } from '@/types/course'
+import CourseCard from '@/components/courses/CourseCard.vue'
 
 const courseStore = useCourseStore()
 const courses = ref<Course[]>([])

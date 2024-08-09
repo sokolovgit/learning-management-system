@@ -4,6 +4,6 @@ export interface Course {
   id: number
   title: string
   description: string
-  teacher?: User
+  teacher: User
   students?: User[]
 }

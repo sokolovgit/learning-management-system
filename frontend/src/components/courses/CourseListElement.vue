@@ -2,11 +2,9 @@
 import type { Course } from '@/types/course'
 import { computed } from 'vue'
 
-interface Props {
+const props = defineProps<{
   course: Course
-}
-
-const props = defineProps<Props>()
+}>()
 
 const enrolledStudentsCount = computed(() => props.course.students?.length || 0)
 
@@ -25,7 +23,7 @@ const studentsLabel = computed(() => {
     <div class="flex justify-between items-center">
       <p class="text-gray-600">{{ enrolledStudentsCount }} {{ studentsLabel }}</p>
       <div class="rounded-full bg-gray-200 w-10 h-10 p-7 flex items-center justify-center">
-        <p class="text-gray-600">{{ course.teacher?.username[0] || 'N/A' }}</p>
+        <p class="text-gray-600">{{ course.teacher || 'N/A' }}</p>
       </div>
     </div>
   </div>
