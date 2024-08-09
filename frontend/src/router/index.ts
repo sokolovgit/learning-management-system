@@ -29,6 +29,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Course',
     component: () => import('../pages/CoursePage.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../pages/NotFoundPage.vue'),
   }
 ]
 
