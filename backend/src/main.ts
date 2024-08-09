@@ -17,6 +17,8 @@ async function bootstrap() {
 
   const logger = new Logger();
 
+  app.setGlobalPrefix('api');
+
   const options = new DocumentBuilder()
     .setTitle('Learning Management System API')
     .setDescription('The Learning Management System API description')
@@ -25,13 +27,13 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
   const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
   await app.listen(port, '0.0.0.0');
 
   logger.log(`Application is running on: ${await app.getUrl()}`);
-  logger.log(`Swagger is running on: ${await app.getUrl()}/api`);
+  logger.log(`Swagger is running on: ${await app.getUrl()}/swagger`);
 }
 
 bootstrap();
