@@ -1,6 +1,9 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
+const baseURL = import.meta.env.BACKEND_URL
+console.log('baseURL:', baseURL)
+
 const apiClient = axios.create({
   baseURL: 'http://127.0.0.1:3000/api',
   headers: {

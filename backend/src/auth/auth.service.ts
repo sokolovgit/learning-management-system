@@ -71,7 +71,7 @@ export class AuthService {
     };
     const token = this.jwtService.sign(payload);
 
-    const url = `http://localhost:3000/auth/verify-email?token=${token}`;
+    const url = `http://localhost:3000/api/auth/verify-email?token=${token}`;
 
     await this.mailerService.sendMail(user.email, 'Verify your email', url);
 

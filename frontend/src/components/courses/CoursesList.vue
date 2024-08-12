@@ -2,9 +2,9 @@
   <div class="justify-center flex pt-10">
     <div class="w-3/4 rounded-md">
       <h2 class="text-2xl text-black font-bold text-center pt-10 mx-auto">Your courses</h2>
-      <DataView class="rounded-md" :value="courses">
+      <DataView :value="courses" :data-key="'id'" v-if="courses">
         <template #list="slotProps">
-          <template v-for="course in slotProps.items">
+          <template v-for="course in slotProps.items" :key="course.id">
             <CourseCard :course="course" />
           </template>
         </template>
@@ -27,7 +27,6 @@ const fetchCourses = async () => {
   courses.value = courseStore.courses
 }
 
-// Fetch courses when the setup function is invoked
 fetchCourses()
 </script>
 

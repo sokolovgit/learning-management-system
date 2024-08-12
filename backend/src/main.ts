@@ -30,7 +30,7 @@ async function bootstrap() {
   SwaggerModule.setup('swagger', app, document);
 
   const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port, '0.0.0.0'); // port is 3000
 
   logger.log(`Application is running on: ${await app.getUrl()}`);
   logger.log(`Swagger is running on: ${await app.getUrl()}/swagger`);
