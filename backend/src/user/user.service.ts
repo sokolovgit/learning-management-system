@@ -9,12 +9,14 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
+    private readonly storageService: StorageService,
   ) {}
 
   async createUserWithHashedPasswordOrThrow(
@@ -103,6 +105,18 @@ export class UserService {
     updateUserDto.isEmailVerified = true;
 
     await this.update(userId, updateUserDto);
+  }
+
+  async uploadProfilePicture(user: User, file: Express.Multer.File) {
+    const uploadedPictureUrl = await this.storageService.uploadFile(
+      'avatars',
+      file,
+    );
+
+    console.log(uploadedPictureUrl);
+    user.avatarUrl = uploadedPictureUrl;
+
+    return await this.userRepository.save(user);
   }
 
   async remove(id: number): Promise<void> {

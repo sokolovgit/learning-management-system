@@ -37,6 +37,9 @@ export class User {
   })
   role: UserRole;
 
+  @Column({ nullable: true })
+  avatarUrl: string;
+
   @OneToMany(() => Course, (course) => course.teacher)
   teachingCourses: Course[];
 

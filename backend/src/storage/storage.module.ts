@@ -5,6 +5,7 @@ import { StorageService } from './storage.service';
 
 @Module({
   imports: [
+    ConfigModule,
     MinioModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -20,6 +21,6 @@ import { StorageService } from './storage.service';
     }),
   ],
   providers: [StorageService],
-  exports: [StorageService],
+  exports: [StorageService, MinioModule],
 })
 export class StorageModule {}
