@@ -2,7 +2,13 @@
   <Card>
     <template #content>
       <div class="flex justify-start">
-        <Avatar icon="pi pi-user" size="large" />
+        <Avatar
+          v-if="props.user.avatarUrl"
+          :image="props.user.avatarUrl"
+          shape="circle"
+          size="large"
+        />
+        <Avatar v-else icon="pi pi-user" size="large" shape="circle" />
         <div class="pl-4">
           <h2 class="text-xl font-bold">{{ props.user.username }}</h2>
           <p class="text-gray-500 text-sm">{{ props.user.email }}</p>
@@ -21,4 +27,6 @@ import type { User } from '@/types/user'
 const props = defineProps<{
   user: User
 }>()
+
+console.log(props.user)
 </script>

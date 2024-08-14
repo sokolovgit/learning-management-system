@@ -57,6 +57,7 @@ export class CourseService {
     const courses = await this.courseRepository.find({
       relations: {
         students: true,
+        teacher: true,
       },
       where: { students: { id: user.id } },
     });

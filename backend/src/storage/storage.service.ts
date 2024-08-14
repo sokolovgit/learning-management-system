@@ -62,7 +62,7 @@ export class StorageService implements OnModuleInit {
         metadata,
       );
 
-      return `${this.minioOptions.endPoint}:${this.minioOptions.port}/${this.minioOptions.baseBucket}/${minioPath}`;
+      return `http://${this.minioOptions.endPoint}:${this.minioOptions.port}/${this.minioOptions.baseBucket}/${minioPath}`;
     } catch (error) {
       console.error(error);
       throw new HttpException(

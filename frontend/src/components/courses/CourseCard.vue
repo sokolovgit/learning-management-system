@@ -7,12 +7,16 @@
     </template>
 
     <template #subtitle>
-      <p class="text-gray-700 mb-4">{{ course.description }}</p>
+      <div class="flex mx-auto justify-between">
+        <p class="text-gray-700 mb-4">{{ props.course.description }}</p>
+        <p class="text-gray-600">{{ enrolledStudentsCount }} {{ studentsLabel }}</p>
+      </div>
     </template>
 
     <template #content>
-      <p class="text-gray-600">{{ enrolledStudentsCount }} {{ studentsLabel }}</p>
-      <Avatar icon="pi pi-user" size="large" />
+      <div class="">
+        <UserCard :user="course.teacher" />
+      </div>
     </template>
   </Card>
 </template>
@@ -21,10 +25,13 @@
 import Card from 'primevue/card'
 import type { Course } from '@/types/course'
 import { computed } from 'vue'
+import UserCard from '@/components/UserCard.vue'
 
 const props = defineProps<{
   course: Course
 }>()
+
+console.log(props.course)
 
 const enrolledStudentsCount = computed(() => props.course.students?.length || 0)
 
