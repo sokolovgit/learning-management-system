@@ -14,6 +14,10 @@ import { jwtDecode } from 'jwt-decode'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
 
+  const setUser = (userData: User): void => {
+    user.value = userData
+  }
+
   const register = async (userData: RegisterRequest): Promise<void> => {
     console.log(userData)
     const response = await apiClient.post<RegisterResponse>('/auth/register', userData)
@@ -28,6 +32,12 @@ export const useAuthStore = defineStore('auth', () => {
     const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
     localStorage.setItem('token', response.data.access_token)
     user.value = response.data.user
+  }
+
+  const fetchCurrentUser = async (): Promise<User> => {
+    const response = await apiClient.get<User>('/auth/me')
+    user.value = response.data
+    return user.value
   }
 
   const isAuthenticated = (): boolean => {
@@ -45,6 +55,14 @@ export const useAuthStore = defineStore('auth', () => {
     return decodedToken.exp * 1000 < Date.now()
   }
 
+  const loginWithGoogle = async (code: string): Promise<void> => {
+    const response = await apiClient.get('/auth/google/callback', {
+      params: { code }
+    })
+    localStorage.setItem('token', response.data.access_token)
+    setUser(response.data.user)
+  }
+
   const logout = (): void => {
     user.value = null
     localStorage.removeItem('token')
@@ -57,6 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     verifyEmail,
     login,
+    loginWithGoogle,
     logout
   }
 })

@@ -14,6 +14,7 @@ import { UserRole } from '../user/enums/user-role.enum';
 import { MailerService } from '../mailer/mailer.service';
 
 import * as bcrypt from 'bcryptjs';
+import { GoogleProfileDto } from './dtos/google-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -49,14 +50,8 @@ export class AuthService {
       throw new ForbiddenException('Email is not verified');
     }
 
-    const payload = {
-      email: foundUser.email,
-      role: foundUser.role as UserRole,
-      sub: foundUser.id,
-    };
-
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: await this.generateJwtToken(foundUser),
       user: foundUser,
     };
   }
@@ -65,11 +60,7 @@ export class AuthService {
     const user =
       await this.userService.createUserWithHashedPasswordOrThrow(createUserDto);
 
-    const payload = {
-      email: user.email,
-      sub: user.id,
-    };
-    const token = this.jwtService.sign(payload);
+    const token = await this.generateJwtToken(user);
 
     const url = `http://localhost:3000/api/auth/verify-email?token=${token}`;
 
@@ -99,5 +90,29 @@ export class AuthService {
         message: 'Invalid or expired token',
       };
     }
+  }
+
+  async generateJwtToken(user: User) {
+    const payload = {
+      email: user.email,
+      role: user.role as UserRole,
+      sub: user.id,
+    };
+
+    return this.jwtService.sign(payload);
+  }
+
+  async registerOrUpdateGoogleUser(
+    googleUser: GoogleProfileDto,
+  ): Promise<User> {
+    let user = await this.userService.findOneByEmail(googleUser.email);
+
+    if (!user) {
+      user = await this.userService.createUserFromGoogleOrThrow(googleUser);
+    }
+
+    user = await this.userService.updateUserFromGoogle(user, googleUser);
+
+    return user;
   }
 }

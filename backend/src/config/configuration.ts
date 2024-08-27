@@ -31,4 +31,9 @@ export default () => ({
     secretKey: process.env.MINIO_SECRET_KEY,
     baseBucket: process.env.MINIO_BASE_BUCKET,
   },
+  googleOauth: {
+    clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_OAUTH_CALLBACK_URL,
+  },
 });

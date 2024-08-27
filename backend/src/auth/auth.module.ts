@@ -13,6 +13,7 @@ import { LocalStrategy } from './local.strategy';
 import { AbilitiesGuard } from '../common/guards/abilities.guard';
 import { AbilitiesModule } from '../abilities/abilities.module';
 import { MailerService } from '../mailer/mailer.service';
+import { GoogleStrategy } from './google.strategy';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MailerService } from '../mailer/mailer.service';
     AuthService,
     LocalStrategy,
     JwtStrategy,
+    GoogleStrategy,
     MailerService,
     AbilitiesGuard,
   ],
