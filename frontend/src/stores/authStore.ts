@@ -10,9 +10,11 @@ import {
 } from '@/types/auth'
 import apiClient from '@/axios'
 import { jwtDecode } from 'jwt-decode'
+import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
+  const router = useRouter()
 
   const setUser = (userData: User): void => {
     user.value = userData
@@ -55,14 +57,26 @@ export const useAuthStore = defineStore('auth', () => {
     return decodedToken.exp * 1000 < Date.now()
   }
 
-  const loginWithGoogle = async (code: string): Promise<void> => {
-    const response = await apiClient.get('/auth/google/callback', {
-      params: { code }
-    })
-    localStorage.setItem('token', response.data.access_token)
-    setUser(response.data.user)
+  const loginWithGoogle = async () => {
+    console.log('Login with Google:', `${import.meta.env.VITE_BACKEND_URL}/auth/google`)
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`
   }
 
+  const handleGoogleAuthCallback = async () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const token = urlParams.get('token')
+
+    if (token) {
+      // Save the token in localStorage
+      localStorage.setItem('token', token)
+
+      const decodedToken: User = jwtDecode(token)
+      console.log('decodedToken:', decodedToken)
+      setUser(decodedToken)
+
+      await router.push('/dashboard')
+    }
+  }
   const logout = (): void => {
     user.value = null
     localStorage.removeItem('token')
@@ -76,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
     verifyEmail,
     login,
     loginWithGoogle,
+    handleGoogleAuthCallback,
     logout
   }
 })

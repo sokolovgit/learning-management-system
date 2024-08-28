@@ -13,6 +13,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../pages/LoginPage.vue')
   },
   {
+    path: '/auth/google/callback',
+    name: 'GoogleCallback',
+    component: () => import('../pages/GoogleCallbackPage.vue')
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../pages/DashboardPage.vue'),
@@ -33,7 +38,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../pages/NotFoundPage.vue'),
+    component: () => import('../pages/NotFoundPage.vue')
   }
 ]
 

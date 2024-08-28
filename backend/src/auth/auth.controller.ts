@@ -89,11 +89,13 @@ export class AuthController {
 
     console.log('user:', user);
 
-    const jwtToken = this.authService.generateJwtToken(user);
+    const jwtToken = await this.authService.generateJwtToken(user);
 
     console.log('jwtToken:', jwtToken);
 
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    return res.redirect(`${frontendUrl}/dashboard`);
+    return res.redirect(
+      `${frontendUrl}/auth/google/callback?token=${jwtToken}`,
+    );
   }
 }

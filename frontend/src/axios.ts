@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
-const baseURL = import.meta.env.BACKEND_URL
+const baseURL = import.meta.env.VITE_BACKEND_URL
 console.log('baseURL:', baseURL)
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:3000/api',
+  baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json'
   }

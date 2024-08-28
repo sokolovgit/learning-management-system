@@ -74,6 +74,8 @@ services:
       MINIO_ROOT_PASSWORD: password
     volumes:
       - minio_data:/data
+    networks:
+      - app-network
     command: server /data
     restart: always
 

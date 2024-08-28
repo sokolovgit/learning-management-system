@@ -15,6 +15,7 @@ declare module 'vue' {
     DataView: typeof import('primevue/dataview')['default']
     Header: typeof import('./src/components/Header.vue')['default']
     LoginForm: typeof import('./src/components/auth/LoginForm.vue')['default']
+    NotFound: typeof import('./src/components/NotFound.vue')['default']
     RegisterForm: typeof import('./src/components/auth/RegisterForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
