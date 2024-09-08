@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserRole } from '../user/enums/user-role.enum';
 import { EnrollmentCode } from '../enrollment-code/entities/enrollment-code.entity';
+import type { CourseRelation } from './types/course.relation';
 
 import { ConfigService } from '@nestjs/config';
 
@@ -56,6 +57,7 @@ export class CourseService {
     const courses = await this.courseRepository.find({
       relations: {
         students: true,
+        teacher: true,
       },
       where: { students: { id: user.id } },
     });
@@ -112,10 +114,10 @@ export class CourseService {
     };
   }
 
-  async findCourseByIdOrThrow(id: number) {
+  async findCourseByIdOrThrow(id: number, relations: CourseRelation = {}) {
     const course = await this.courseRepository.findOne({
       where: { id },
-      relations: { teacher: true, students: true },
+      relations,
     });
 
     if (!course) {
@@ -126,7 +128,10 @@ export class CourseService {
   }
 
   async enrollUserInCourseOrThrow(courseId: number, user: User) {
-    const course = await this.findCourseByIdOrThrow(courseId);
+    const course = await this.findCourseByIdOrThrow(courseId, {
+      teacher: true,
+      students: true,
+    });
 
     if (user.role !== UserRole.STUDENT) {
       throw new ForbiddenException('Only students can enroll in courses');

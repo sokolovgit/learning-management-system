@@ -9,12 +9,15 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { StorageService } from '../storage/storage.service';
+import { GoogleProfileDto } from '../auth/dtos/google-profile.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
+    private readonly storageService: StorageService,
   ) {}
 
   async createUserWithHashedPasswordOrThrow(
@@ -36,6 +39,39 @@ export class UserService {
       password: createUserDto.password,
       role: createUserDto.role,
     });
+
+    return await this.userRepository.save(user);
+  }
+
+  async createUserFromGoogleOrThrow(
+    googleUser: GoogleProfileDto,
+  ): Promise<User> {
+    const isEmailTaken = await this.userRepository.findOneBy({
+      email: googleUser.email,
+    });
+
+    if (isEmailTaken) {
+      throw new BadRequestException('Email is already taken');
+    }
+
+    const user = this.userRepository.create({
+      username: googleUser.email,
+      email: googleUser.email,
+      password: '',
+      role: googleUser.role,
+      isEmailVerified: true,
+      avatarUrl: googleUser.avatarUrl,
+    });
+
+    return await this.userRepository.save(user);
+  }
+
+  async updateUserFromGoogle(
+    user: User,
+    googleProfileDto: GoogleProfileDto,
+  ): Promise<User> {
+    user.username = googleProfileDto.username;
+    user.avatarUrl = googleProfileDto.avatarUrl;
 
     return await this.userRepository.save(user);
   }
@@ -88,6 +124,10 @@ export class UserService {
     return user;
   }
 
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOneBy({ email });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const result = await this.userRepository.update(id, updateUserDto);
 
@@ -103,6 +143,18 @@ export class UserService {
     updateUserDto.isEmailVerified = true;
 
     await this.update(userId, updateUserDto);
+  }
+
+  async uploadProfilePicture(user: User, file: Express.Multer.File) {
+    const uploadedPictureUrl = await this.storageService.uploadFile(
+      'avatars',
+      file,
+    );
+
+    console.log(uploadedPictureUrl);
+    user.avatarUrl = uploadedPictureUrl;
+
+    return await this.userRepository.save(user);
   }
 
   async remove(id: number): Promise<void> {

@@ -6,6 +6,7 @@ export interface User {
   email: string
   isEmailVerified: boolean
   role: UserRole
+  avatarUrl?: string
   // teachingCourses?: Course[];
   // enrolledCourses?: Course[];
   createdAt: string

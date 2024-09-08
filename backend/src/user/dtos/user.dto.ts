@@ -60,6 +60,14 @@ export class UserDto {
   role: UserRole;
 
   @ApiProperty({
+    name: 'avatarUrl',
+    description: 'The avatar URL of the user',
+    type: 'string',
+    example: 'https://example.com/avatar.jpg',
+  })
+  avatarUrl: string;
+
+  @ApiProperty({
     description: 'Courses that the user is teaching',
     type: () => [CourseDto],
     example: [CourseDto],
@@ -95,6 +103,7 @@ export class UserDto {
     this.email = user.email;
     this.isEmailVerified = user.isEmailVerified;
     this.role = user.role;
+    this.avatarUrl = user.avatarUrl;
     this.teachingCourses =
       user.teachingCourses && user.teachingCourses.length > 0
         ? user.teachingCourses.map((course) => new CourseDto(course))

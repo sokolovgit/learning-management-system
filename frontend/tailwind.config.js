@@ -1,15 +1,10 @@
-import forms from '@tailwindcss/forms';
+import forms from '@tailwindcss/forms'
 
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-  ],
+module.exports = {
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {}
   },
-  plugins: [
-    forms,
-  ],
+  plugins: [forms, require('tailwindcss-primeui')]
 }

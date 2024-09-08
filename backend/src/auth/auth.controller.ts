@@ -21,6 +21,7 @@ import { CurrentUser } from '../user/decorators/user.decorator';
 
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { GoogleOathGuard } from '../common/guards/google-oath.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -39,8 +40,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  async login(@CurrentUser() user: LoginDto) {
-    return this.authService.loginOrThrow(user);
+  async login(@CurrentUser() loginUserDto: LoginDto) {
+    const { access_token, user } =
+      await this.authService.loginOrThrow(loginUserDto);
+
+    return {
+      access_token,
+      user: new UserDto(user),
+    };
   }
 
   @Get('verify-email')
@@ -57,8 +64,38 @@ export class AuthController {
   }
 
   @Auth()
+  @Get('me')
+  async getCurrentUser(@CurrentUser() user: User) {
+    return new UserDto(user);
+  }
+
+  @Auth()
   @Post('protected_student')
   async protected_student(@CurrentUser() user: User) {
     return user;
+  }
+
+  @Get('google')
+  @UseGuards(GoogleOathGuard)
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async googleAuth() {
+    console.log('google auth is reached');
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleOathGuard)
+  async googleAuthCallback(@CurrentUser() user: User, @Res() res: Response) {
+    console.log('google auth callback is reached');
+
+    console.log('user:', user);
+
+    const jwtToken = await this.authService.generateJwtToken(user);
+
+    console.log('jwtToken:', jwtToken);
+
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    return res.redirect(
+      `${frontendUrl}/auth/google/callback?token=${jwtToken}`,
+    );
   }
 }
